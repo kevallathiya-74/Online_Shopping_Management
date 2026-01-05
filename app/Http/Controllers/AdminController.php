@@ -93,7 +93,7 @@ class AdminController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|string',
+            'image' => 'nullable|url|max:500',
         ]);
 
         Product::create($request->all());
@@ -116,7 +116,7 @@ class AdminController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|string',
+            'image' => 'nullable|url|max:500',
         ]);
 
         $product = Product::findOrFail($id);

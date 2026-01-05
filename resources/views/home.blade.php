@@ -33,7 +33,11 @@
                         <div class="card-body">
                             <div class="text-center mb-3">
                                 @if($product->image)
-                                    <img src="{{ $product->image }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 150px;">
+                                    <img src="{{ $product->image }}" 
+                                         alt="{{ $product->name }}" 
+                                         class="img-fluid" 
+                                         style="max-height: 150px; object-fit: contain;"
+                                         onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150?text=No+Image'; this.style.opacity='0.5';">
                                 @else
                                     <div class="bg-light p-5">
                                         <i class="fas fa-image fa-3x text-muted"></i>

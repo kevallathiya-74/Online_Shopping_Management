@@ -19,7 +19,11 @@
                             <div class="row mb-3 pb-3 border-bottom">
                                 <div class="col-md-2">
                                     @if($item->product->image)
-                                        <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}" class="img-fluid">
+                                        <img src="{{ $item->product->image }}" 
+                                             alt="{{ $item->product->name }}" 
+                                             class="img-fluid rounded"
+                                             style="max-height: 100px; object-fit: contain;"
+                                             onerror="this.onerror=null; this.src='https://via.placeholder.com/100x100?text=No+Image';">
                                     @else
                                         <div class="bg-light p-3 text-center">
                                             <i class="fas fa-image fa-2x text-muted"></i>

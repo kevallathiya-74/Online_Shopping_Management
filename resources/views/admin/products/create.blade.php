@@ -55,7 +55,8 @@
 
                     <div class="col-md-4 mb-3">
                         <label for="image" class="form-label">Image URL</label>
-                        <input type="text" class="form-control" id="image" name="image" value="{{ old('image') }}">
+                        <input type="url" class="form-control" id="image" name="image" value="{{ old('image') }}" placeholder="https://example.com/image.jpg">
+                        <small class="text-muted">Enter a valid image URL (CDN, cloud storage, or public link)</small>
                     </div>
                 </div>
 

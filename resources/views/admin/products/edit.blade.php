@@ -56,9 +56,19 @@
 
                     <div class="col-md-4 mb-3">
                         <label for="image" class="form-label">Image URL</label>
-                        <input type="text" class="form-control" id="image" name="image" value="{{ old('image', $product->image) }}">
+                        <input type="url" class="form-control" id="image" name="image" value="{{ old('image', $product->image) }}" placeholder="https://example.com/image.jpg">
+                        <small class="text-muted">Enter a valid image URL (CDN, cloud storage, or public link)</small>
                     </div>
                 </div>
+
+                @if($product->image)
+                    <div class="mb-3">
+                        <label class="form-label">Current Image Preview</label>
+                        <div>
+                            <img src="{{ $product->image }}" alt="Product Image" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" onerror="this.src='https://via.placeholder.com/200x200?text=Image+Not+Found'">
+                        </div>
+                    </div>
+                @endif
 
                 <button type="submit" class="btn btn-primary">Update Product</button>
                 <a href="{{ route('admin.products') }}" class="btn btn-secondary">Cancel</a>

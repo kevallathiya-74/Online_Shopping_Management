@@ -7,7 +7,11 @@
     <div class="row">
         <div class="col-md-6">
             @if($product->image)
-                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="img-fluid rounded">
+                <img src="{{ $product->image }}" 
+                     alt="{{ $product->name }}" 
+                     class="img-fluid rounded" 
+                     style="max-height: 400px; width: 100%; object-fit: contain;"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'; this.style.opacity='0.7';">
             @else
                 <div class="bg-light p-5 text-center rounded">
                     <i class="fas fa-image fa-5x text-muted"></i>
