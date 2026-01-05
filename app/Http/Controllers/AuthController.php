@@ -21,7 +21,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string',
         ]);
@@ -32,6 +32,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
             'address' => $request->address,
+            'role' => 'user', // Default role is user
         ]);
 
         return redirect()->route('login')->with('success', 'Registration successful! Please login.');
@@ -43,7 +44,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Handle Login
+    // Handle Login (Role-Based Redirect)
     public function login(Request $request)
     {
         $request->validate([
@@ -51,11 +52,19 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Attempt authentication
         if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->route('home')->with('success', 'Welcome back!');
+            $user = Auth::user();
+            
+            // Check user role and redirect accordingly
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Welcome back, Admin!');
+            } else {
+                return redirect()->route('home')->with('success', 'Welcome back!');
+            }
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
+        return back()->withErrors(['email' => 'Invalid credentials. Please check your email and password.'])->withInput();
     }
 
     // Handle Logout
