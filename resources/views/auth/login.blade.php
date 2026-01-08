@@ -16,13 +16,21 @@
                 
                 <!-- Card Body -->
                 <div class="card-body p-5">
-                    <!-- Info Message -->
-                    <div class="alert alert-info" style="border-radius: 10px; border-left: 4px solid #3b82f6;">
-                        <i class="fas fa-info-circle"></i> 
-                        <small>
-                            <strong>Single Login for All Users</strong><br>
-                            Admins and users login here - you'll be redirected based on your role
-                        </small>
+                    <!-- Demo Credentials Info -->
+                    <div class="alert alert-info" style="border-radius: 10px; border-left: 4px solid #3b82f6; background: #eff6ff;">
+                        <i class="fas fa-info-circle"></i> <strong>Demo Credentials:</strong>
+                        <div class="mt-2" style="font-size: 14px;">
+                            <div class="mb-2">
+                                <strong>👨‍💼 Admin:</strong><br>
+                                <code style="background: #dbeafe; padding: 2px 8px; border-radius: 4px;">admin@admin.com</code> / 
+                                <code style="background: #dbeafe; padding: 2px 8px; border-radius: 4px;">admin123</code>
+                            </div>
+                            <div>
+                                <strong>👤 User:</strong><br>
+                                <code style="background: #dbeafe; padding: 2px 8px; border-radius: 4px;">user@test.com</code> / 
+                                <code style="background: #dbeafe; padding: 2px 8px; border-radius: 4px;">password</code>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Error Messages -->
@@ -87,17 +95,6 @@
                             <i class="fas fa-user-plus"></i> Register Now
                         </a>
                     </p>
-                </div>
-            </div>
-            
-            <!-- Test Credentials -->
-            <div class="card mt-3" style="border-radius: 15px; border: 2px dashed #e5e7eb;">
-                <div class="card-body p-3">
-                    <small class="text-muted">
-                        <strong><i class="fas fa-key"></i> Test Credentials:</strong><br>
-                        <strong>Admin:</strong> admin@admin.com / admin123<br>
-                        <strong>User:</strong> Register a new account
-                    </small>
                 </div>
             </div>
         </div>

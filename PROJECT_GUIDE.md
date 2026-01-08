@@ -1,6 +1,8 @@
 # Online Shopping Management System
 **College Major Project - Laravel + MySQL**
 
+ clear the cache :
+ php artisan config:clear; php artisan cache:clear; php artisan view:clear; php artisan route:clear
 ---
 
 ## 📋 Project Overview

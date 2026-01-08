@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
@@ -16,11 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Admin User
-        Admin::create([
+        // Create Admin User (in users table with admin role)
+        User::create([
             'name' => 'Admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('admin123'),
+            'role' => 'admin',
+            'phone' => '1234567890',
+            'address' => 'Admin Address',
         ]);
 
         // Create Test User
@@ -28,6 +30,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'John Doe',
             'email' => 'user@test.com',
             'password' => Hash::make('password'),
+            'role' => 'user',
             'phone' => '9876543210',
             'address' => '123 Main Street, City, State',
         ]);
