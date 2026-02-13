@@ -12,36 +12,27 @@ use App\Models\Product;
 
 class OrderController extends Controller
 {
-    // Show Checkout Page
+    // =============================================
+    // CHECKOUT PAGE
+    // =============================================
     public function checkout()
     {
         $cartItems = Cart::where('user_id', Auth::id())
-            ->with('product')
+            ->with('product.category')
             ->get();
 
+        // Redirect if cart is empty
         if ($cartItems->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
+            return redirect()->route('cart.index')
+                ->with('error', 'Your cart is empty! Add products before checking out.');
         }
 
-        $total = $cartItems->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
-
-        return view('orders.checkout', compact('cartItems', 'total'));
-    }
-
-    // Place Order
-    public function placeOrder(Request $request)
-    {
-        $request->validate([
-            'shipping_address' => 'required|string',
-            'phone' => 'required|string|max:15',
-        ]);
-
-        $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
-
-        if ($cartItems->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
+        // Check stock availability before checkout
+        foreach ($cartItems as $item) {
+            if ($item->quantity > $item->product->stock) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Product "' . $item->product->name . '" has only ' . $item->product->stock . ' units in stock. Please update your cart.');
+            }
         }
 
         // Calculate total
@@ -49,21 +40,61 @@ class OrderController extends Controller
             return $item->product->price * $item->quantity;
         });
 
-        // Start database transaction
+        $user = Auth::user();
+
+        return view('orders.checkout', compact('cartItems', 'total', 'user'));
+    }
+
+    // =============================================
+    // PLACE ORDER (with Transaction)
+    // =============================================
+    public function placeOrder(Request $request)
+    {
+        // Validate shipping details and payment method
+        $request->validate([
+            'shipping_address' => 'required|string|max:500',
+            'phone' => 'required|string|max:15',
+            'payment_method' => 'required|in:online,offline',
+        ]);
+
+        $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
+
+        // Check if cart is empty
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart.index')
+                ->with('error', 'Your cart is empty! Cannot place order.');
+        }
+
+        // Re-check stock availability
+        foreach ($cartItems as $item) {
+            if ($item->quantity > $item->product->stock) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Product "' . $item->product->name . '" is out of stock or has limited quantity. Please update your cart.');
+            }
+        }
+
+        // Calculate total from cart (not from form — prevents price manipulation)
+        $total = $cartItems->sum(function ($item) {
+            return $item->product->price * $item->quantity;
+        });
+
+        // Start database transaction (either all succeed or all fail)
         DB::beginTransaction();
 
         try {
-            // Create Order
+            // Step 1: Create the Order
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'total_amount' => $total,
                 'status' => 'pending',
                 'shipping_address' => $request->shipping_address,
                 'phone' => $request->phone,
+                'payment_method' => $request->payment_method,
             ]);
 
-            // Create Order Items
+            // Step 2: Create Order Items + Deduct Stock
             foreach ($cartItems as $cartItem) {
+                // Save each item at current price (price is locked at order time)
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $cartItem->product_id,
@@ -71,43 +102,124 @@ class OrderController extends Controller
                     'price' => $cartItem->product->price,
                 ]);
 
-                // Update product stock
+                // Deduct stock
                 $product = Product::find($cartItem->product_id);
                 $product->stock -= $cartItem->quantity;
                 $product->save();
             }
 
-            // Clear cart
+            // Step 3: Clear the cart after successful order
             Cart::where('user_id', Auth::id())->delete();
 
+            // Commit all changes to database
             DB::commit();
 
-            return redirect()->route('orders.index')->with('success', 'Order placed successfully!');
+            // Redirect to order confirmation page
+            return redirect()->route('orders.confirmation', $order->id)
+                ->with('success', 'Order placed successfully! Your Order ID is #' . $order->id);
+
         } catch (\Exception $e) {
+            // Rollback all changes if anything fails
             DB::rollBack();
-            return back()->with('error', 'Failed to place order. Please try again.');
+            return back()->with('error', 'Failed to place order. Please try again. Error: ' . $e->getMessage());
         }
     }
 
-    // View Order History
-    public function index()
+    // =============================================
+    // ORDER CONFIRMATION
+    // =============================================
+    public function confirmation($id)
     {
-        $orders = Order::where('user_id', Auth::id())
-            ->with('orderItems.product')
-            ->latest()
-            ->get();
-
-        return view('orders.index', compact('orders'));
-    }
-
-    // View Single Order
-    public function show($id)
-    {
+        // Only show order if it belongs to current user
         $order = Order::where('id', $id)
             ->where('user_id', Auth::id())
             ->with('orderItems.product')
             ->firstOrFail();
 
+        return view('orders.confirmation', compact('order'));
+    }
+
+    // =============================================
+    // ORDER HISTORY
+    // =============================================
+    public function index()
+    {
+        $orders = Order::where('user_id', Auth::id())
+            ->with('orderItems.product')
+            ->latest()
+            ->paginate(10);
+
+        return view('orders.index', compact('orders'));
+    }
+
+    // =============================================
+    // VIEW SINGLE ORDER
+    // =============================================
+    public function show($id)
+    {
+        // Security: Only show order if it belongs to current user
+        $order = Order::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->with('orderItems.product.category')
+            ->firstOrFail();
+
         return view('orders.show', compact('order'));
+    }
+
+    // =============================================
+    // CANCEL ORDER (User can cancel only pending orders)
+    // =============================================
+    public function cancelOrder($id)
+    {
+        // Step 1: Find order — must belong to current user
+        $order = Order::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->with('orderItems.product')
+            ->firstOrFail();
+
+        // Step 2: Check if order can be cancelled
+        // Only "pending" orders are allowed to be cancelled
+        if ($order->status == 'cancelled') {
+            return back()->with('error', 'This order is already cancelled.');
+        }
+
+        if ($order->status == 'completed') {
+            return back()->with('error', 'Cannot cancel this order because it has already been completed and delivered.');
+        }
+
+        if ($order->status == 'processing') {
+            return back()->with('error', 'Cannot cancel this order because it is already being processed. Please contact support for help.');
+        }
+
+        if ($order->status != 'pending') {
+            return back()->with('error', 'This order cannot be cancelled at this stage.');
+        }
+
+        // Step 3: Cancel order + Restore stock (using transaction)
+        DB::beginTransaction();
+
+        try {
+            // Restore stock for each order item
+            foreach ($order->orderItems as $item) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $product->stock += $item->quantity;
+                    $product->save();
+                }
+            }
+
+            // Update order status to cancelled
+            $order->status = 'cancelled';
+            $order->save();
+
+            DB::commit();
+
+            return redirect()->route('orders.show', $order->id)
+                ->with('success', 'Order #' . $order->id . ' has been cancelled successfully. Product stock has been restored.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to cancel order. Please try again later.');
+        }
     }
 }

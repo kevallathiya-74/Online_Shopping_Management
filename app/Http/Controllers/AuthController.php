@@ -60,7 +60,7 @@ class AuthController extends Controller
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Welcome back, Admin!');
             } else {
-                return redirect()->route('home')->with('success', 'Welcome back!');
+                return redirect()->route('user.dashboard')->with('success', 'Welcome back, ' . $user->name . '!');
             }
         }
 
@@ -68,9 +68,16 @@ class AuthController extends Controller
     }
 
     // Handle Logout
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+
+        // Destroy session completely — prevents browser back button issue
+        $request->session()->invalidate();
+
+        // Generate new CSRF token for security
+        $request->session()->regenerateToken();
+
         return redirect()->route('login')->with('success', 'Logged out successfully!');
     }
 }

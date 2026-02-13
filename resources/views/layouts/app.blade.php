@@ -3,71 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Online Shopping Management')</title>
+    <meta name="description" content="ShopEasy - Your one-stop online shopping destination. Browse products, manage orders, and shop with confidence.">
+    <title>@yield('title', 'ShopEasy - Online Shopping')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        html {
-            height: 100%;
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0a58ca;
+            --bg-light: #f0f2f5;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
         }
+        html { height: 100%; }
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: var(--bg-light);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
+            color: var(--text-dark);
         }
+
+        /* ===== NAVBAR ===== */
         .navbar {
-            background-color: #0d6efd !important;
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+            box-shadow: 0 2px 15px rgba(13, 110, 253, 0.3);
+            padding: 0.6rem 0;
         }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+        }
+        .navbar .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin: 0 2px;
+        }
+        .navbar .nav-link:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        .cart-badge {
+            position: relative;
+        }
+        .cart-badge .badge {
+            position: absolute;
+            top: -2px;
+            right: -4px;
+            font-size: 0.65rem;
+            padding: 3px 6px;
+            border-radius: 50%;
+            background-color: #ff4757 !important;
+        }
+
+        /* ===== CARDS ===== */
         .card {
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+        }
+
+        /* ===== PRODUCT CARDS ===== */
+        .product-card {
+            overflow: hidden;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
         }
         .product-image-container {
             height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 20px;
-            margin-bottom: 15px;
+            background-color: #f8f9fc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
         }
         .product-image-container img {
             max-height: 180px;
             width: auto;
             object-fit: contain;
         }
-        .badge-custom {
-            background-color: #ffc107;
-            color: #212529;
-            padding: 5px 12px;
-            border-radius: 3px;
-            font-size: 11px;
-        }
-        .category-btn {
-            padding: 8px 20px;
-            margin: 5px;
-        }
+
+        /* ===== PRICE ===== */
         .price-tag {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0d6efd;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
         }
-        main {
-            flex: 1;
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
         }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0a58ca, #084298);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+        }
+
+        /* ===== CATEGORY FILTER ===== */
+        .category-btn {
+            padding: 8px 18px;
+            margin: 4px;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .category-btn.active,
+        .category-btn:hover {
+            background-color: var(--primary);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        /* ===== BADGE ===== */
+        .badge-custom {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #212529;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .badge-status-pending { background-color: #ffc107; color: #212529; }
+        .badge-status-processing { background-color: #17a2b8; color: #fff; }
+        .badge-status-completed { background-color: #28a745; color: #fff; }
+        .badge-status-cancelled { background-color: #dc3545; color: #fff; }
+
+        /* ===== ALERTS ===== */
+        .alert {
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        /* ===== MAIN + FOOTER ===== */
+        main { flex: 1; }
         footer {
-            background-color: #212529;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             margin-top: auto;
+        }
+        footer a {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        footer a:hover { color: #fff; }
+
+        /* ===== DROPDOWN ===== */
+        .dropdown-menu {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            padding: 8px;
+        }
+        .dropdown-item {
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+        }
+        .dropdown-divider {
+            margin: 4px 0;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- ===== NAVIGATION BAR ===== -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
                 <i class="fas fa-shopping-bag"></i> ShopEasy
@@ -76,38 +218,93 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <!-- Home Link (Always visible) -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}">Home</a>
+                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
+                            <i class="fas fa-home"></i> Home
+                        </a>
                     </li>
+
                     @auth
+                        <!-- Dashboard -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('cart.index') }}">
-                                <i class="fas fa-shopping-cart"></i> Cart
+                            <a class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
                             </a>
                         </li>
+
+                        <!-- Cart with Count -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('orders.index') }}">My Orders</a>
+                            <a class="nav-link cart-badge {{ request()->routeIs('cart.index') ? 'active' : '' }}" href="{{ route('cart.index') }}">
+                                <i class="fas fa-shopping-cart"></i> Cart
+                                @php
+                                    $cartCount = \App\Models\Cart::where('user_id', Auth::id())->sum('quantity');
+                                @endphp
+                                @if($cartCount > 0)
+                                    <span class="badge">{{ $cartCount }}</span>
+                                @endif
+                            </a>
                         </li>
+
+                        <!-- My Orders -->
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}" href="{{ route('orders.index') }}">
+                                <i class="fas fa-box"></i> Orders
+                            </a>
+                        </li>
+
+                        <!-- User Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user"></i> {{ Auth::user()->name }}
+                                <i class="fas fa-user-circle"></i> {{ Auth::user()->name }}
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('user.dashboard') }}">
+                                        <i class="fas fa-tachometer-alt text-primary"></i> My Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('user.profile') }}">
+                                        <i class="fas fa-user-edit text-info"></i> My Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('orders.index') }}">
+                                        <i class="fas fa-box text-success"></i> My Orders
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                @if(Auth::user()->isAdmin())
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                            <i class="fas fa-shield-alt text-danger"></i> Admin Panel
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                @endif
                                 <li>
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="dropdown-item">Logout</button>
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                        </button>
                                     </form>
                                 </li>
                             </ul>
                         </li>
                     @else
+                        <!-- Guest Links -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Login</a>
+                            <a class="nav-link" href="{{ route('login') }}">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">Register</a>
+                            <a class="nav-link btn btn-outline-light btn-sm ms-2 px-3" href="{{ route('register') }}">
+                                <i class="fas fa-user-plus"></i> Register
+                            </a>
                         </li>
                     @endauth
                 </ul>
@@ -115,34 +312,83 @@
         </div>
     </nav>
 
-    <!-- Alert Messages -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    <!-- ===== ALERT MESSAGES ===== -->
+    <div class="container mt-3">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-    <!-- Main Content -->
+        @if($errors->any() && !request()->routeIs('user.profile') && !request()->routeIs('checkout'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Please fix the following:</strong>
+                <ul class="mb-0 mt-1">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
     <main class="py-4">
         @yield('content')
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+    <!-- ===== FOOTER ===== -->
+    <footer class="text-white py-4 mt-5">
         <div class="container">
-            <p>&copy; 2026 Online Shopping Management. College Major Project.</p>
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="fw-bold"><i class="fas fa-shopping-bag"></i> ShopEasy</h6>
+                    <small class="text-white-50">Your trusted online shopping destination.</small>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="fw-bold">Quick Links</h6>
+                    <div class="d-flex flex-column">
+                        <a href="{{ route('home') }}"><small>Browse Products</small></a>
+                        @auth
+                            <a href="{{ route('user.dashboard') }}"><small>My Dashboard</small></a>
+                            <a href="{{ route('orders.index') }}"><small>My Orders</small></a>
+                        @endauth
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <h6 class="fw-bold">Contact</h6>
+                    <small class="text-white-50">
+                        <i class="fas fa-envelope"></i> support@shopeasy.com<br>
+                        <i class="fas fa-phone"></i> +91-9876543210
+                    </small>
+                </div>
+            </div>
+            <hr class="my-3" style="border-color: rgba(255,255,255,0.1);">
+            <p class="text-center text-white-50 mb-0">
+                <small>&copy; 2026 ShopEasy - Online Shopping Management System. All rights reserved.</small>
+            </p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
     @yield('scripts')
 </body>
 </html>
