@@ -46,7 +46,7 @@ class OrderController extends Controller
     }
 
     // =============================================
-    // PLACE ORDER (with Transaction)
+    // PLACE ORDER (with Transaction & Razorpay support)
     // =============================================
     public function placeOrder(Request $request)
     {
@@ -73,16 +73,54 @@ class OrderController extends Controller
             }
         }
 
-        // Calculate total from cart (not from form — prevents price manipulation)
+        // Calculate total 
         $total = $cartItems->sum(function ($item) {
             return $item->product->price * $item->quantity;
         });
 
-        // Start database transaction (either all succeed or all fail)
-        DB::beginTransaction();
+        // ---------------------------------------------------------
+        // HANDLE ONLINE PAYMENT (RAZORPAY)
+        // ---------------------------------------------------------
+        if ($request->payment_method == 'online') {
+            try {
+                $api = new \Razorpay\Api\Api(config('services.razorpay.key_id'), config('services.razorpay.key_secret'));
 
+                // Create Razorpay Order
+                $razorpayOrder = $api->order->create([
+                    'receipt'         => 'order_rcpt_' . time(),
+                    'amount'          => $total * 100, // amount in paise
+                    'currency'        => 'INR',
+                    'payment_capture' => 1 // auto capture
+                ]);
+
+                // Store Razorpay Order ID and shipping details in session for verification
+                session([
+                    'razorpay_order_id' => $razorpayOrder['id'],
+                    'shipping_address'  => $request->shipping_address,
+                    'phone'             => $request->phone,
+                ]);
+
+                // Return data for the frontend Razorpay modal
+                return response()->json([
+                    'success'           => true,
+                    'payment_method'    => 'online',
+                    'razorpay_order_id' => $razorpayOrder['id'],
+                    'amount'            => $total * 100,
+                    'name'              => Auth::user()->name,
+                    'email'             => Auth::user()->email,
+                    'contact'           => $request->phone,
+                    'key_id'            => config('services.razorpay.key_id'),
+                ]);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'error' => 'Razorpay Error: ' . $e->getMessage()], 500);
+            }
+        }
+
+        // ---------------------------------------------------------
+        // HANDLE OFFLINE (COD) - Original Logic
+        // ---------------------------------------------------------
+        DB::beginTransaction();
         try {
-            // Step 1: Create the Order
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'total_amount' => $total,
@@ -92,9 +130,7 @@ class OrderController extends Controller
                 'payment_method' => $request->payment_method,
             ]);
 
-            // Step 2: Create Order Items + Deduct Stock
             foreach ($cartItems as $cartItem) {
-                // Save each item at current price (price is locked at order time)
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $cartItem->product_id,
@@ -102,26 +138,101 @@ class OrderController extends Controller
                     'price' => $cartItem->product->price,
                 ]);
 
-                // Deduct stock
                 $product = Product::find($cartItem->product_id);
                 $product->stock -= $cartItem->quantity;
                 $product->save();
             }
 
-            // Step 3: Clear the cart after successful order
             Cart::where('user_id', Auth::id())->delete();
-
-            // Commit all changes to database
             DB::commit();
 
-            // Redirect to order confirmation page
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'redirect' => route('orders.confirmation', $order->id)]);
+            }
+
             return redirect()->route('orders.confirmation', $order->id)
                 ->with('success', 'Order placed successfully! Your Order ID is #' . $order->id);
-
         } catch (\Exception $e) {
-            // Rollback all changes if anything fails
             DB::rollBack();
-            return back()->with('error', 'Failed to place order. Please try again. Error: ' . $e->getMessage());
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            }
+            return back()->with('error', 'Failed to place order. Error: ' . $e->getMessage());
+        }
+    }
+
+    // =============================================
+    // VERIFY RAZORPAY PAYMENT
+    // =============================================
+    public function verifyPayment(Request $request)
+    {
+        $api = new \Razorpay\Api\Api(config('services.razorpay.key_id'), config('services.razorpay.key_secret'));
+
+        $success = true;
+        $error = "Payment Verification Failed";
+
+        if (!empty($request->razorpay_payment_id)) {
+            try {
+                // Verify Signature
+                $attributes = [
+                    'razorpay_order_id' => session('razorpay_order_id'),
+                    'razorpay_payment_id' => $request->razorpay_payment_id,
+                    'razorpay_signature' => $request->razorpay_signature
+                ];
+
+                $api->utility->verifyPaymentSignature($attributes);
+            } catch (\Exception $e) {
+                $success = false;
+                $error = "Razorpay Error: " . $e->getMessage();
+            }
+        } else {
+            $success = false;
+        }
+
+        if ($success === true) {
+            // Place the order now that payment is verified
+            $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
+            $total = $cartItems->sum(function ($item) {
+                return $item->product->price * $item->quantity;
+            });
+
+            DB::beginTransaction();
+            try {
+                $order = Order::create([
+                    'user_id' => Auth::id(),
+                    'total_amount' => $total,
+                    'status' => 'pending', // You can set this to 'processing' or 'completed' if paid
+                    'shipping_address' => session('shipping_address'),
+                    'phone' => session('phone'),
+                    'payment_method' => 'online',
+                ]);
+
+                foreach ($cartItems as $cartItem) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $cartItem->product_id,
+                        'quantity' => $cartItem->quantity,
+                        'price' => $cartItem->product->price,
+                    ]);
+
+                    $product = Product::find($cartItem->product_id);
+                    $product->stock -= $cartItem->quantity;
+                    $product->save();
+                }
+
+                Cart::where('user_id', Auth::id())->delete();
+                session()->forget(['razorpay_order_id', 'shipping_address', 'phone']);
+
+                DB::commit();
+
+                return redirect()->route('orders.confirmation', $order->id)
+                    ->with('success', 'Payment successful! Order placed.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return redirect()->route('checkout')->with('error', 'Payment verified but order creation failed: ' . $e->getMessage());
+            }
+        } else {
+            return redirect()->route('checkout')->with('error', $error);
         }
     }
 
@@ -216,7 +327,6 @@ class OrderController extends Controller
 
             return redirect()->route('orders.show', $order->id)
                 ->with('success', 'Order #' . $order->id . ' has been cancelled successfully. Product stock has been restored.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to cancel order. Please try again later.');

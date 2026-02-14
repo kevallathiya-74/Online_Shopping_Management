@@ -139,7 +139,7 @@
                             </td>
                             <td>{{ $user->phone ?? 'Not provided' }}</td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td class="fw-bold text-muted">
                                 <i class="fas fa-shield-alt"></i> Role:
                             </td>
@@ -148,7 +148,7 @@
                                     {{ ucfirst($user->role) }}
                                 </span>
                             </td>
-                        </tr>
+                        </tr> -->
                         <tr>
                             <td class="fw-bold text-muted">
                                 <i class="fas fa-calendar"></i> Joined:

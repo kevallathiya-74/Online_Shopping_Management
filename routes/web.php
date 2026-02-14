@@ -24,6 +24,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+
+    // Forgot Password Routes
+    Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('password.forgot');
+    Route::post('/forgot-password', [AuthController::class, 'verifyEmail'])->name('password.verify');
+    Route::get('/reset-password', [AuthController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
 // =============================================
@@ -49,8 +55,9 @@ Route::middleware('auth')->group(function () {
     // Checkout & Orders
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/orders/place', [OrderController::class, 'placeOrder'])->name('orders.place');
+    Route::post('/verify-payment', [OrderController::class, 'verifyPayment'])->name('payment.verify');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/confirmation/{id}', [OrderController::class, 'confirmation'])->name('orders.confirmation');
+    Route::get('/order-confirmation/{id}', [OrderController::class, 'confirmation'])->name('orders.confirmation');
     Route::put('/orders/{id}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
 });

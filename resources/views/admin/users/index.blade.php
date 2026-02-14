@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap">
         <div>
             <h2><i class="fas fa-users-cog"></i> User Management</h2>
-            <p>View and manage all registered users, change roles, and control access</p>
+            <p>View and manage all registered users, change roles and control access</p>
         </div>
     </div>
 </div>
@@ -155,17 +155,4 @@
     @endif
 </div>
 
-<!-- Important Notes -->
-<div class="card mt-4">
-    <div class="card-header py-3">
-        <h5 class="mb-0 fw-bold"><i class="fas fa-info-circle"></i> Important Notes</h5>
-    </div>
-    <div class="card-body">
-        <ul class="mb-0">
-            <li class="mb-2"><strong>Role Change:</strong> Select a new role from the dropdown to immediately change a user's role. Admin role grants full access to this admin panel.</li>
-            <li class="mb-2"><strong>Self Protection:</strong> You cannot change your own role or delete your own account for security reasons.</li>
-            <li class="mb-2"><strong>Delete User:</strong> Users with existing orders cannot be deleted. You must handle their orders first.</li>
-        </ul>
-    </div>
-</div>
 @endsection

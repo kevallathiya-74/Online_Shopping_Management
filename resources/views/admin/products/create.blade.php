@@ -103,18 +103,44 @@
                     @enderror
                 </div>
 
-                <div class="col-md-4 mb-3">
+            </div>
+
+            <!-- Image URL with Live Preview -->
+            <div class="row mb-3">
+                <div class="col-md-8">
                     <label for="image" class="form-label">Image URL</label>
                     <input type="url" 
                            class="form-control @error('image') is-invalid @enderror" 
                            id="image" 
                            name="image" 
                            value="{{ old('image') }}" 
-                           placeholder="https://example.com/image.jpg">
+                           placeholder="https://example.com/image.jpg"
+                           oninput="previewImage(this.value)">
                     @error('image')
                         <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
                     @enderror
-                    <small class="text-muted"><i class="fas fa-info-circle"></i> Paste any public image URL</small>
+                    <div id="imageStatus" class="mt-1"></div>
+                    
+                    <div class="alert alert-light border mt-2 mb-0 py-2">
+                        <small class="fw-bold"><i class="fas fa-info-circle text-primary"></i> How to get the correct Image URL:</small>
+                        <ol class="mb-0 mt-1 small text-muted" style="padding-left: 18px;">
+                            <li>Search for a product image on Google</li>
+                            <li><strong>Right-click</strong> on the image → <strong>"Open image in new tab"</strong></li>
+                            <li>Copy the URL from the new tab (it should end with <code>.jpg</code>, <code>.png</code>, <code>.webp</code>)</li>
+                            <li>Paste it here and check the preview</li>
+                        </ol>
+                        <small class="text-danger mt-1 d-block"><i class="fas fa-times-circle"></i> Don't paste the Google search page URL — paste the direct image URL only.</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Image Preview</label>
+                    <div id="imagePreviewBox" style="width: 100%; height: 160px; background: #f8f9fc; border: 2px dashed #dee2e6; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <div id="imagePreviewPlaceholder" style="text-align: center; color: #adb5bd;">
+                            <i class="fas fa-image fa-2x mb-2"></i>
+                            <br><small>Paste URL to see preview</small>
+                        </div>
+                        <img id="imagePreviewImg" src="" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;">
+                    </div>
                 </div>
             </div>
 
@@ -130,4 +156,57 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    // Live Image Preview when admin pastes a URL
+    function previewImage(url) {
+        var img = document.getElementById('imagePreviewImg');
+        var placeholder = document.getElementById('imagePreviewPlaceholder');
+        var previewBox = document.getElementById('imagePreviewBox');
+        var status = document.getElementById('imageStatus');
+
+        // If URL is empty, show placeholder
+        if (!url || url.trim() === '') {
+            img.style.display = 'none';
+            placeholder.style.display = 'block';
+            previewBox.style.borderColor = '#dee2e6';
+            status.innerHTML = '';
+            return;
+        }
+
+        // Try to load the image
+        status.innerHTML = '<small class="text-info"><i class="fas fa-spinner fa-spin"></i> Loading image...</small>';
+        
+        img.onload = function() {
+            // Image loaded successfully
+            img.style.display = 'block';
+            placeholder.style.display = 'none';
+            previewBox.style.borderColor = '#198754';
+            previewBox.style.borderStyle = 'solid';
+            status.innerHTML = '<small class="text-success"><i class="fas fa-check-circle"></i> Image loaded successfully!</small>';
+        };
+
+        img.onerror = function() {
+            // Image failed to load
+            img.style.display = 'none';
+            placeholder.style.display = 'block';
+            placeholder.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i><br><small class="text-danger">Could not load image</small>';
+            previewBox.style.borderColor = '#dc3545';
+            previewBox.style.borderStyle = 'solid';
+            status.innerHTML = '<small class="text-danger"><i class="fas fa-times-circle"></i> Could not load this URL. Make sure it is a direct image link (ending with .jpg, .png, .webp).</small>';
+        };
+
+        img.src = url;
+    }
+
+    // Auto-preview if URL already filled (e.g. after validation error)
+    document.addEventListener('DOMContentLoaded', function() {
+        var imageInput = document.getElementById('image');
+        if (imageInput && imageInput.value) {
+            previewImage(imageInput.value);
+        }
+    });
+</script>
 @endsection
