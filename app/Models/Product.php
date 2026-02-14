@@ -25,4 +25,25 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    // Relationship: Product has many Reviews
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    // Relationship: Product is in many Wishlists
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    // Check if product is in wishlist of authenticated user
+    public function inWishlist()
+    {
+        if (auth()->check()) {
+            return $this->wishlists()->where('user_id', auth()->id())->exists();
+        }
+        return false;
+    }
 }

@@ -88,6 +88,9 @@
                 <a href="{{ route('user.profile') }}" class="btn btn-warning">
                     <i class="fas fa-user-edit"></i> Edit Profile
                 </a>
+                <a href="{{ route('wishlist.index') }}" class="btn btn-danger">
+                    <i class="fas fa-heart"></i> My Wishlist <span class="badge bg-white text-danger ms-1">{{ $wishlistCount }}</span>
+                </a>
             </div>
         </div>
     </div>
@@ -98,86 +101,86 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold"><i class="fas fa-clock text-primary"></i> Recent Orders</h5>
                 @if($recentOrders->isNotEmpty())
-                    <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-primary">
-                        View All <i class="fas fa-arrow-right"></i>
-                    </a>
+                <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-primary">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
                 @endif
             </div>
         </div>
         <div class="card-body p-0">
             @if($recentOrders->isEmpty())
-                <div class="text-center py-5">
-                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">No orders yet</h5>
-                    <p class="text-muted mb-3">Start shopping to see your orders here!</p>
-                    <a href="{{ route('home') }}" class="btn btn-primary">
-                        <i class="fas fa-shopping-bag"></i> Start Shopping
-                    </a>
-                </div>
+            <div class="text-center py-5">
+                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No orders yet</h5>
+                <p class="text-muted mb-3">Start shopping to see your orders here!</p>
+                <a href="{{ route('home') }}" class="btn btn-primary">
+                    <i class="fas fa-shopping-bag"></i> Start Shopping
+                </a>
+            </div>
             @else
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0 align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Items</th>
-                                <th>Total</th>
-                                <th>Payment</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($recentOrders as $order)
-                                <tr>
-                                    <td><span class="badge bg-secondary">#{{ $order->id }}</span></td>
-                                    <td><span class="badge bg-info">{{ $order->orderItems->count() }} item(s)</span></td>
-                                    <td><strong class="text-success">₹{{ number_format($order->total_amount, 2) }}</strong></td>
-                                    <td>
-                                        @if($order->payment_method == 'online')
-                                            <span class="badge bg-primary"><i class="fas fa-credit-card"></i> Online</span>
-                                        @else
-                                            <span class="badge bg-secondary"><i class="fas fa-money-bill-wave"></i> COD</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-status-{{ $order->status }} px-2 py-1">
-                                            @if($order->status == 'completed')
-                                                <i class="fas fa-check-circle"></i>
-                                            @elseif($order->status == 'cancelled')
-                                                <i class="fas fa-times-circle"></i>
-                                            @elseif($order->status == 'processing')
-                                                <i class="fas fa-spinner"></i>
-                                            @else
-                                                <i class="fas fa-clock"></i>
-                                            @endif
-                                            {{ ucfirst($order->status) }}
-                                        </span>
-                                    </td>
-                                    <td><small class="text-muted">{{ $order->created_at->format('d M Y') }}</small></td>
-                                    <td class="text-center">
-                                        <div class="d-flex gap-1 justify-content-center">
-                                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye"></i> View
-                                            </a>
-                                            @if($order->status == 'pending')
-                                                <form action="{{ route('orders.cancel', $order->id) }}" method="POST"
-                                                      onsubmit="return confirm('Cancel Order #{{ $order->id }}?');">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Order">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($recentOrders as $order)
+                        <tr>
+                            <td><span class="badge bg-secondary">#{{ $order->id }}</span></td>
+                            <td><span class="badge bg-info">{{ $order->orderItems->count() }} item(s)</span></td>
+                            <td><strong class="text-success">₹{{ number_format($order->total_amount, 2) }}</strong></td>
+                            <td>
+                                @if($order->payment_method == 'online')
+                                <span class="badge bg-primary"><i class="fas fa-credit-card"></i> Online</span>
+                                @else
+                                <span class="badge bg-secondary"><i class="fas fa-money-bill-wave"></i> COD</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge badge-status-{{ $order->status }} px-2 py-1">
+                                    @if($order->status == 'completed')
+                                    <i class="fas fa-check-circle"></i>
+                                    @elseif($order->status == 'cancelled')
+                                    <i class="fas fa-times-circle"></i>
+                                    @elseif($order->status == 'processing')
+                                    <i class="fas fa-spinner"></i>
+                                    @else
+                                    <i class="fas fa-clock"></i>
+                                    @endif
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </td>
+                            <td><small class="text-muted">{{ $order->created_at->format('d M Y') }}</small></td>
+                            <td class="text-center">
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    @if($order->status == 'pending')
+                                    <form action="{{ route('orders.cancel', $order->id) }}" method="POST"
+                                        onsubmit="return confirm('Cancel Order #{{ $order->id }}?');">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Order">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             @endif
         </div>
     </div>

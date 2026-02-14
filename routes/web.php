@@ -52,6 +52,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
+    // Wishlist Routes
+    Route::get('/wishlist', [\App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle/{productId}', [\App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    // Product Review Routes
+    Route::post('/products/{id}/review', [ProductController::class, 'storeReview'])->name('products.review');
+
     // Checkout & Orders
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/orders/place', [OrderController::class, 'placeOrder'])->name('orders.place');
@@ -60,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/order-confirmation/{id}', [OrderController::class, 'confirmation'])->name('orders.confirmation');
     Route::put('/orders/{id}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{id}/invoice', [OrderController::class, 'downloadInvoice'])->name('orders.invoice');
 });
 
 // =============================================

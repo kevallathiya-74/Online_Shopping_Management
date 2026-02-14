@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Cart;
 use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -261,6 +262,17 @@ class OrderController extends Controller
             ->paginate(10);
 
         return view('orders.index', compact('orders'));
+    }
+
+    // =============================================
+    // DOWNLOAD INVOICE
+    // =============================================
+    public function downloadInvoice($id)
+    {
+        $order = Order::with('orderItems.product')->where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        $pdf = Pdf::loadView('orders.invoice', compact('order'));
+        return $pdf->download('invoice-' . $order->id . '.pdf');
     }
 
     // =============================================

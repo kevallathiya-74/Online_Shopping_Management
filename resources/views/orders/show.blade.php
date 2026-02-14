@@ -40,13 +40,13 @@
                                     <td>
                                         <span class="badge badge-status-{{ $order->status }} px-3 py-1">
                                             @if($order->status == 'completed')
-                                                <i class="fas fa-check-circle"></i>
+                                            <i class="fas fa-check-circle"></i>
                                             @elseif($order->status == 'cancelled')
-                                                <i class="fas fa-times-circle"></i>
+                                            <i class="fas fa-times-circle"></i>
                                             @elseif($order->status == 'processing')
-                                                <i class="fas fa-spinner"></i>
+                                            <i class="fas fa-spinner"></i>
                                             @else
-                                                <i class="fas fa-clock"></i>
+                                            <i class="fas fa-clock"></i>
                                             @endif
                                             {{ ucfirst($order->status) }}
                                         </span>
@@ -60,9 +60,9 @@
                                     <td class="fw-bold text-muted" style="width: 120px;">Payment:</td>
                                     <td>
                                         @if($order->payment_method == 'online')
-                                            <span class="badge bg-primary"><i class="fas fa-credit-card"></i> Online Payment</span>
+                                        <span class="badge bg-primary"><i class="fas fa-credit-card"></i> Online Payment</span>
                                         @else
-                                            <span class="badge bg-secondary"><i class="fas fa-money-bill-wave"></i> Cash on Delivery</span>
+                                        <span class="badge bg-secondary"><i class="fas fa-money-bill-wave"></i> Cash on Delivery</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -100,30 +100,30 @@
                             </thead>
                             <tbody>
                                 @foreach($order->orderItems as $index => $item)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>
-                                            @if($item->product)
-                                                <a href="{{ route('products.show', $item->product->id) }}" class="text-decoration-none fw-bold">
-                                                    {{ $item->product->name }}
-                                                </a>
-                                            @else
-                                                <span class="text-muted">Product Deleted</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($item->product && $item->product->category)
-                                                <span class="badge bg-primary" style="font-size: 0.7rem;">
-                                                    {{ $item->product->category->name }}
-                                                </span>
-                                            @else
-                                                <span class="text-muted">—</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">₹{{ number_format($item->price, 2) }}</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $item->quantity }}</span></td>
-                                        <td class="text-end"><strong>₹{{ number_format($item->price * $item->quantity, 2) }}</strong></td>
-                                    </tr>
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>
+                                        @if($item->product)
+                                        <a href="{{ route('products.show', $item->product->id) }}" class="text-decoration-none fw-bold">
+                                            {{ $item->product->name }}
+                                        </a>
+                                        @else
+                                        <span class="text-muted">Product Deleted</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($item->product && $item->product->category)
+                                        <span class="badge bg-primary" style="font-size: 0.7rem;">
+                                            {{ $item->product->category->name }}
+                                        </span>
+                                        @else
+                                        <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">₹{{ number_format($item->price, 2) }}</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ $item->quantity }}</span></td>
+                                    <td class="text-end"><strong>₹{{ number_format($item->price * $item->quantity, 2) }}</strong></td>
+                                </tr>
                                 @endforeach
                             </tbody>
                             <tfoot>
@@ -170,42 +170,42 @@
                     <!-- Order Status Info -->
                     <div class="text-center">
                         @if($order->status == 'pending')
-                            <div class="alert alert-warning mb-3 py-2">
-                                <i class="fas fa-clock"></i> Your order is <strong>pending</strong> and will be processed soon.
-                            </div>
-                            <!-- Cancel Button — Only for Pending Orders -->
-                            <form action="{{ route('orders.cancel', $order->id) }}" method="POST"
-                                  onsubmit="return confirm('Are you sure you want to cancel Order #{{ $order->id }}?\n\nThis action cannot be undone.\nProduct stock will be restored.');">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="btn btn-danger w-100 mb-2">
-                                    <i class="fas fa-times-circle"></i> Cancel This Order
-                                </button>
-                            </form>
-                            <small class="text-muted">
-                                <i class="fas fa-info-circle"></i> You can only cancel orders that are still pending.
-                            </small>
+                        <div class="alert alert-warning mb-3 py-2">
+                            <i class="fas fa-clock"></i> Your order is <strong>pending</strong> and will be processed soon.
+                        </div>
+                        <!-- Cancel Button — Only for Pending Orders -->
+                        <form action="{{ route('orders.cancel', $order->id) }}" method="POST"
+                            onsubmit="return confirm('Are you sure you want to cancel Order #{{ $order->id }}?\n\nThis action cannot be undone.\nProduct stock will be restored.');">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-danger w-100 mb-2">
+                                <i class="fas fa-times-circle"></i> Cancel This Order
+                            </button>
+                        </form>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i> You can only cancel orders that are still pending.
+                        </small>
                         @elseif($order->status == 'processing')
-                            <div class="alert alert-info mb-3 py-2">
-                                <i class="fas fa-spinner fa-spin"></i> Your order is being <strong>processed</strong>.
-                            </div>
-                            <div class="alert alert-light border mb-0 py-2">
-                                <small><i class="fas fa-info-circle text-muted"></i> Orders being processed cannot be cancelled. Please contact support if needed.</small>
-                            </div>
+                        <div class="alert alert-info mb-3 py-2">
+                            <i class="fas fa-spinner fa-spin"></i> Your order is being <strong>processed</strong>.
+                        </div>
+                        <div class="alert alert-light border mb-0 py-2">
+                            <small><i class="fas fa-info-circle text-muted"></i> Orders being processed cannot be cancelled. Please contact support if needed.</small>
+                        </div>
                         @elseif($order->status == 'completed')
-                            <div class="alert alert-success mb-3 py-2">
-                                <i class="fas fa-check-circle"></i> Your order has been <strong>completed</strong>!
-                            </div>
-                            <div class="alert alert-light border mb-0 py-2">
-                                <small><i class="fas fa-info-circle text-muted"></i> Completed orders cannot be cancelled.</small>
-                            </div>
+                        <div class="alert alert-success mb-3 py-2">
+                            <i class="fas fa-check-circle"></i> Your order has been <strong>completed</strong>!
+                        </div>
+                        <div class="alert alert-light border mb-0 py-2">
+                            <small><i class="fas fa-info-circle text-muted"></i> Completed orders cannot be cancelled.</small>
+                        </div>
                         @elseif($order->status == 'cancelled')
-                            <div class="alert alert-danger mb-3 py-2">
-                                <i class="fas fa-times-circle"></i> This order was <strong>cancelled</strong>.
-                            </div>
-                            <div class="alert alert-light border mb-0 py-2">
-                                <small><i class="fas fa-info-circle text-muted"></i> Product stock has been restored to inventory.</small>
-                            </div>
+                        <div class="alert alert-danger mb-3 py-2">
+                            <i class="fas fa-times-circle"></i> This order was <strong>cancelled</strong>.
+                        </div>
+                        <div class="alert alert-light border mb-0 py-2">
+                            <small><i class="fas fa-info-circle text-muted"></i> Product stock has been restored to inventory.</small>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -214,6 +214,9 @@
             <!-- Action Buttons -->
             <div class="card mt-3">
                 <div class="card-body">
+                    <a href="{{ route('orders.invoice', $order->id) }}" class="btn btn-dark w-100 mb-2">
+                        <i class="fas fa-file-pdf"></i> Download Invoice
+                    </a>
                     <a href="{{ route('orders.index') }}" class="btn btn-outline-primary w-100 mb-2">
                         <i class="fas fa-list"></i> All Orders
                     </a>

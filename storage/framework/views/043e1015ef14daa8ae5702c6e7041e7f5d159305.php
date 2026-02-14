@@ -38,13 +38,13 @@
                                     <td>
                                         <span class="badge badge-status-<?php echo e($order->status); ?> px-3 py-1">
                                             <?php if($order->status == 'completed'): ?>
-                                                <i class="fas fa-check-circle"></i>
+                                            <i class="fas fa-check-circle"></i>
                                             <?php elseif($order->status == 'cancelled'): ?>
-                                                <i class="fas fa-times-circle"></i>
+                                            <i class="fas fa-times-circle"></i>
                                             <?php elseif($order->status == 'processing'): ?>
-                                                <i class="fas fa-spinner"></i>
+                                            <i class="fas fa-spinner"></i>
                                             <?php else: ?>
-                                                <i class="fas fa-clock"></i>
+                                            <i class="fas fa-clock"></i>
                                             <?php endif; ?>
                                             <?php echo e(ucfirst($order->status)); ?>
 
@@ -59,9 +59,9 @@
                                     <td class="fw-bold text-muted" style="width: 120px;">Payment:</td>
                                     <td>
                                         <?php if($order->payment_method == 'online'): ?>
-                                            <span class="badge bg-primary"><i class="fas fa-credit-card"></i> Online Payment</span>
+                                        <span class="badge bg-primary"><i class="fas fa-credit-card"></i> Online Payment</span>
                                         <?php else: ?>
-                                            <span class="badge bg-secondary"><i class="fas fa-money-bill-wave"></i> Cash on Delivery</span>
+                                        <span class="badge bg-secondary"><i class="fas fa-money-bill-wave"></i> Cash on Delivery</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -99,32 +99,32 @@
                             </thead>
                             <tbody>
                                 <?php $__currentLoopData = $order->orderItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <tr>
-                                        <td><?php echo e($index + 1); ?></td>
-                                        <td>
-                                            <?php if($item->product): ?>
-                                                <a href="<?php echo e(route('products.show', $item->product->id)); ?>" class="text-decoration-none fw-bold">
-                                                    <?php echo e($item->product->name); ?>
+                                <tr>
+                                    <td><?php echo e($index + 1); ?></td>
+                                    <td>
+                                        <?php if($item->product): ?>
+                                        <a href="<?php echo e(route('products.show', $item->product->id)); ?>" class="text-decoration-none fw-bold">
+                                            <?php echo e($item->product->name); ?>
 
-                                                </a>
-                                            <?php else: ?>
-                                                <span class="text-muted">Product Deleted</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <?php if($item->product && $item->product->category): ?>
-                                                <span class="badge bg-primary" style="font-size: 0.7rem;">
-                                                    <?php echo e($item->product->category->name); ?>
+                                        </a>
+                                        <?php else: ?>
+                                        <span class="text-muted">Product Deleted</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if($item->product && $item->product->category): ?>
+                                        <span class="badge bg-primary" style="font-size: 0.7rem;">
+                                            <?php echo e($item->product->category->name); ?>
 
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="text-muted">—</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="text-center">₹<?php echo e(number_format($item->price, 2)); ?></td>
-                                        <td class="text-center"><span class="badge bg-info"><?php echo e($item->quantity); ?></span></td>
-                                        <td class="text-end"><strong>₹<?php echo e(number_format($item->price * $item->quantity, 2)); ?></strong></td>
-                                    </tr>
+                                        </span>
+                                        <?php else: ?>
+                                        <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center">₹<?php echo e(number_format($item->price, 2)); ?></td>
+                                    <td class="text-center"><span class="badge bg-info"><?php echo e($item->quantity); ?></span></td>
+                                    <td class="text-end"><strong>₹<?php echo e(number_format($item->price * $item->quantity, 2)); ?></strong></td>
+                                </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                             <tfoot>
@@ -171,42 +171,42 @@
                     <!-- Order Status Info -->
                     <div class="text-center">
                         <?php if($order->status == 'pending'): ?>
-                            <div class="alert alert-warning mb-3 py-2">
-                                <i class="fas fa-clock"></i> Your order is <strong>pending</strong> and will be processed soon.
-                            </div>
-                            <!-- Cancel Button — Only for Pending Orders -->
-                            <form action="<?php echo e(route('orders.cancel', $order->id)); ?>" method="POST"
-                                  onsubmit="return confirm('Are you sure you want to cancel Order #<?php echo e($order->id); ?>?\n\nThis action cannot be undone.\nProduct stock will be restored.');">
-                                <?php echo csrf_field(); ?>
-                                <?php echo method_field('PUT'); ?>
-                                <button type="submit" class="btn btn-danger w-100 mb-2">
-                                    <i class="fas fa-times-circle"></i> Cancel This Order
-                                </button>
-                            </form>
-                            <small class="text-muted">
-                                <i class="fas fa-info-circle"></i> You can only cancel orders that are still pending.
-                            </small>
+                        <div class="alert alert-warning mb-3 py-2">
+                            <i class="fas fa-clock"></i> Your order is <strong>pending</strong> and will be processed soon.
+                        </div>
+                        <!-- Cancel Button — Only for Pending Orders -->
+                        <form action="<?php echo e(route('orders.cancel', $order->id)); ?>" method="POST"
+                            onsubmit="return confirm('Are you sure you want to cancel Order #<?php echo e($order->id); ?>?\n\nThis action cannot be undone.\nProduct stock will be restored.');">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('PUT'); ?>
+                            <button type="submit" class="btn btn-danger w-100 mb-2">
+                                <i class="fas fa-times-circle"></i> Cancel This Order
+                            </button>
+                        </form>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i> You can only cancel orders that are still pending.
+                        </small>
                         <?php elseif($order->status == 'processing'): ?>
-                            <div class="alert alert-info mb-3 py-2">
-                                <i class="fas fa-spinner fa-spin"></i> Your order is being <strong>processed</strong>.
-                            </div>
-                            <div class="alert alert-light border mb-0 py-2">
-                                <small><i class="fas fa-info-circle text-muted"></i> Orders being processed cannot be cancelled. Please contact support if needed.</small>
-                            </div>
+                        <div class="alert alert-info mb-3 py-2">
+                            <i class="fas fa-spinner fa-spin"></i> Your order is being <strong>processed</strong>.
+                        </div>
+                        <div class="alert alert-light border mb-0 py-2">
+                            <small><i class="fas fa-info-circle text-muted"></i> Orders being processed cannot be cancelled. Please contact support if needed.</small>
+                        </div>
                         <?php elseif($order->status == 'completed'): ?>
-                            <div class="alert alert-success mb-3 py-2">
-                                <i class="fas fa-check-circle"></i> Your order has been <strong>completed</strong>!
-                            </div>
-                            <div class="alert alert-light border mb-0 py-2">
-                                <small><i class="fas fa-info-circle text-muted"></i> Completed orders cannot be cancelled.</small>
-                            </div>
+                        <div class="alert alert-success mb-3 py-2">
+                            <i class="fas fa-check-circle"></i> Your order has been <strong>completed</strong>!
+                        </div>
+                        <div class="alert alert-light border mb-0 py-2">
+                            <small><i class="fas fa-info-circle text-muted"></i> Completed orders cannot be cancelled.</small>
+                        </div>
                         <?php elseif($order->status == 'cancelled'): ?>
-                            <div class="alert alert-danger mb-3 py-2">
-                                <i class="fas fa-times-circle"></i> This order was <strong>cancelled</strong>.
-                            </div>
-                            <div class="alert alert-light border mb-0 py-2">
-                                <small><i class="fas fa-info-circle text-muted"></i> Product stock has been restored to inventory.</small>
-                            </div>
+                        <div class="alert alert-danger mb-3 py-2">
+                            <i class="fas fa-times-circle"></i> This order was <strong>cancelled</strong>.
+                        </div>
+                        <div class="alert alert-light border mb-0 py-2">
+                            <small><i class="fas fa-info-circle text-muted"></i> Product stock has been restored to inventory.</small>
+                        </div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -215,6 +215,9 @@
             <!-- Action Buttons -->
             <div class="card mt-3">
                 <div class="card-body">
+                    <a href="<?php echo e(route('orders.invoice', $order->id)); ?>" class="btn btn-dark w-100 mb-2">
+                        <i class="fas fa-file-pdf"></i> Download Invoice
+                    </a>
                     <a href="<?php echo e(route('orders.index')); ?>" class="btn btn-outline-primary w-100 mb-2">
                         <i class="fas fa-list"></i> All Orders
                     </a>
@@ -227,5 +230,4 @@
     </div>
 </div>
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\Online_Shopping_Management\resources\views/orders/show.blade.php ENDPATH**/ ?>

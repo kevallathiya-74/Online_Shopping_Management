@@ -14,6 +14,7 @@ class UserController extends Controller
     // =============================================
     public function dashboard()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // Get user's order statistics
@@ -35,13 +36,17 @@ class UserController extends Controller
             ->take(5)
             ->get();
 
+        // Wishlist Count
+        $wishlistCount = \App\Models\Wishlist::where('user_id', $user->id)->count();
+
         return view('user.dashboard', compact(
             'user',
             'totalOrders',
             'totalSpent',
             'pendingOrders',
             'completedOrders',
-            'recentOrders'
+            'recentOrders',
+            'wishlistCount'
         ));
     }
 
@@ -52,6 +57,7 @@ class UserController extends Controller
     // Show Profile Page
     public function profile()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         return view('user.profile', compact('user'));
     }
@@ -59,6 +65,7 @@ class UserController extends Controller
     // Update Profile (Name, Email, Phone, Address)
     public function updateProfile(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // Validate input - email must be unique except for current user
@@ -88,6 +95,7 @@ class UserController extends Controller
             'new_password' => 'required|string|min:8|confirmed',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // Verify current password
