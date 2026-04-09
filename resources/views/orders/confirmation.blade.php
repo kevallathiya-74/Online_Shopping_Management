@@ -5,119 +5,115 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <!-- Success Header -->
-            <div class="card mb-4 text-center" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: none;">
-                <div class="card-body text-white py-5">
-                    <i class="fas fa-check-circle fa-4x mb-3"></i>
-                    <h2 class="fw-bold mb-2">Order Placed Successfully!</h2>
-                    <p class="mb-1 opacity-75">Thank you for your purchase. Your order has been received.</p>
-                    <h4 class="mt-3">
-                        <span class="badge bg-white text-success px-4 py-2">Order #{{ $order->id }}</span>
-                    </h4>
+        <div class="col-lg-9">
+            <div class="section-card hero-banner mb-4">
+                <div class="card-body text-center py-5">
+                    <div class="hero-highlight mx-auto mb-3"><i class="fas fa-circle-check"></i> Order Confirmed</div>
+                    <h1 class="hero-title mb-2">Order Placed Successfully</h1>
+                    <p class="hero-subtitle mx-auto">Thank you for your purchase. We have received your order and will start processing it shortly.</p>
+                    <div class="mt-4">
+                        <span class="badge bg-light text-dark border px-3 py-2 fs-6">Order #{{ $order->id }}</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Order Details -->
-            <div class="card mb-4">
-                <div class="card-header py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-info-circle text-primary"></i> Order Details</h5>
+            <div class="section-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-circle-info text-primary me-2"></i>Order Details</h5>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="table-responsive">
                             <table class="table table-borderless mb-0">
                                 <tr>
-                                    <td class="fw-bold text-muted">Order ID:</td>
-                                    <td><span class="badge bg-secondary">#{{ $order->id }}</span></td>
+                                    <td class="text-muted fw-semibold meta-label-col">Order ID</td>
+                                    <td><span class="badge bg-dark-subtle text-dark border">#{{ $order->id }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td class="fw-bold text-muted">Date:</td>
+                                    <td class="text-muted fw-semibold">Date</td>
                                     <td>{{ $order->created_at->format('d M Y, h:i A') }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="fw-bold text-muted">Status:</td>
-                                    <td><span class="badge badge-status-{{ $order->status }} px-2 py-1">{{ ucfirst($order->status) }}</span></td>
+                                    <td class="text-muted fw-semibold">Status</td>
+                                    <td><span class="badge badge-status-{{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
                                 </tr>
                             </table>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
+                            <div class="table-responsive">
                             <table class="table table-borderless mb-0">
                                 <tr>
-                                    <td class="fw-bold text-muted">Payment:</td>
+                                    <td class="text-muted fw-semibold meta-label-col">Payment</td>
                                     <td>
                                         @if($order->payment_method == 'online')
-                                            <span class="badge bg-primary"><i class="fas fa-credit-card"></i> Online Payment</span>
+                                        <span class="badge bg-primary"><i class="fas fa-credit-card me-1"></i>Online Payment</span>
                                         @else
-                                            <span class="badge bg-secondary"><i class="fas fa-money-bill-wave"></i> Cash on Delivery</span>
+                                        <span class="badge bg-secondary"><i class="fas fa-money-bill-wave me-1"></i>Cash on Delivery</span>
                                         @endif
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="fw-bold text-muted">Shipping:</td>
-                                    <td>{{ $order->shipping_address }}</td>
+                                    <td class="text-muted fw-semibold">Shipping</td>
+                                    <td class="text-wrap-anywhere">{{ $order->shipping_address }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="fw-bold text-muted">Phone:</td>
+                                    <td class="text-muted fw-semibold">Phone</td>
                                     <td>{{ $order->phone }}</td>
                                 </tr>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Order Items -->
-            <div class="card mb-4">
-                <div class="card-header py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-box text-success"></i> Items Ordered</h5>
+            <div class="section-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-box text-success me-2"></i>Items Ordered</h5>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Product</th>
-                                    <th>Price</th>
-                                    <th class="text-center">Qty</th>
-                                    <th class="text-end">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($order->orderItems as $index => $item)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td><strong>{{ $item->product->name ?? 'Product Deleted' }}</strong></td>
-                                        <td>₹{{ number_format($item->price, 2) }}</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $item->quantity }}</span></td>
-                                        <td class="text-end"><strong>₹{{ number_format($item->price * $item->quantity, 2) }}</strong></td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-success">
-                                    <td colspan="4" class="text-end fw-bold fs-6">Grand Total:</td>
-                                    <td class="text-end">
-                                        <strong class="text-success fs-5">₹{{ number_format($order->total_amount, 2) }}</strong>
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($order->orderItems as $index => $item)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td><strong class="text-wrap-anywhere d-inline-block">{{ $item->product->name ?? 'Product Deleted' }}</strong></td>
+                                <td>₹{{ number_format($item->price, 2) }}</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $item->quantity }}</span></td>
+                                <td class="text-end fw-bold">₹{{ number_format($item->price * $item->quantity, 2) }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="4" class="text-end fw-bold">Grand Total</td>
+                                <td class="text-end text-success fw-bold fs-5">₹{{ number_format($order->total_amount, 2) }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-eye"></i> View Order Details
+                    <i class="fas fa-eye me-1"></i>View Order Details
                 </a>
                 <a href="{{ route('orders.index') }}" class="btn btn-outline-primary btn-lg">
-                    <i class="fas fa-box"></i> My Orders
+                    <i class="fas fa-box-open me-1"></i>My Orders
                 </a>
                 <a href="{{ route('home') }}" class="btn btn-outline-secondary btn-lg">
-                    <i class="fas fa-shopping-bag"></i> Continue Shopping
+                    <i class="fas fa-bag-shopping me-1"></i>Continue Shopping
                 </a>
             </div>
         </div>

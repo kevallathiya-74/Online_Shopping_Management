@@ -5,22 +5,30 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Cart;
-use App\Models\Product;
+use App\Services\CartService;
+use App\Services\InventoryService;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
+    private CartService $cartService;
+    private InventoryService $inventoryService;
+
+    public function __construct(CartService $cartService, InventoryService $inventoryService)
+    {
+        $this->cartService = $cartService;
+        $this->inventoryService = $inventoryService;
+    }
+
     // =============================================
     // CHECKOUT PAGE
     // =============================================
     public function checkout()
     {
-        $cartItems = Cart::where('user_id', Auth::id())
-            ->with('product.category')
-            ->get();
+        $cartItems = $this->cartService->getUserCartItems(Auth::id(), true);
 
         // Redirect if cart is empty
         if ($cartItems->isEmpty()) {
@@ -37,9 +45,7 @@ class OrderController extends Controller
         }
 
         // Calculate total
-        $total = $cartItems->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
+        $total = $this->cartService->calculateTotal($cartItems);
 
         $user = Auth::user();
 
@@ -58,7 +64,7 @@ class OrderController extends Controller
             'payment_method' => 'required|in:online,offline',
         ]);
 
-        $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
+        $cartItems = $this->cartService->getUserCartItems(Auth::id());
 
         // Check if cart is empty
         if ($cartItems->isEmpty()) {
@@ -75,9 +81,7 @@ class OrderController extends Controller
         }
 
         // Calculate total 
-        $total = $cartItems->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
+        $total = $this->cartService->calculateTotal($cartItems);
 
         // ---------------------------------------------------------
         // HANDLE ONLINE PAYMENT (RAZORPAY)
@@ -99,6 +103,7 @@ class OrderController extends Controller
                     'razorpay_order_id' => $razorpayOrder['id'],
                     'shipping_address'  => $request->shipping_address,
                     'phone'             => $request->phone,
+                    'checkout_user_id'  => Auth::id(),
                 ]);
 
                 // Return data for the frontend Razorpay modal
@@ -120,32 +125,14 @@ class OrderController extends Controller
         // ---------------------------------------------------------
         // HANDLE OFFLINE (COD) - Original Logic
         // ---------------------------------------------------------
-        DB::beginTransaction();
         try {
-            $order = Order::create([
+            $order = $this->createOrderFromCart($cartItems, [
                 'user_id' => Auth::id(),
-                'total_amount' => $total,
                 'status' => 'pending',
                 'shipping_address' => $request->shipping_address,
                 'phone' => $request->phone,
                 'payment_method' => $request->payment_method,
             ]);
-
-            foreach ($cartItems as $cartItem) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $cartItem->product_id,
-                    'quantity' => $cartItem->quantity,
-                    'price' => $cartItem->product->price,
-                ]);
-
-                $product = Product::find($cartItem->product_id);
-                $product->stock -= $cartItem->quantity;
-                $product->save();
-            }
-
-            Cart::where('user_id', Auth::id())->delete();
-            DB::commit();
 
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'redirect' => route('orders.confirmation', $order->id)]);
@@ -154,7 +141,6 @@ class OrderController extends Controller
             return redirect()->route('orders.confirmation', $order->id)
                 ->with('success', 'Order placed successfully! Your Order ID is #' . $order->id);
         } catch (\Exception $e) {
-            DB::rollBack();
             if ($request->ajax()) {
                 return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
             }
@@ -167,6 +153,10 @@ class OrderController extends Controller
     // =============================================
     public function verifyPayment(Request $request)
     {
+        if ((int) session('checkout_user_id') !== Auth::id()) {
+            return redirect()->route('checkout')->with('error', 'Invalid checkout session. Please try again.');
+        }
+
         $api = new \Razorpay\Api\Api(config('services.razorpay.key_id'), config('services.razorpay.key_secret'));
 
         $success = true;
@@ -192,44 +182,32 @@ class OrderController extends Controller
 
         if ($success === true) {
             // Place the order now that payment is verified
-            $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
-            $total = $cartItems->sum(function ($item) {
-                return $item->product->price * $item->quantity;
-            });
+            $cartItems = $this->cartService->getUserCartItems(Auth::id());
 
-            DB::beginTransaction();
+            if ($cartItems->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'Your cart is empty! Cannot verify payment for an empty cart.');
+            }
+
+            foreach ($cartItems as $item) {
+                if ($item->quantity > $item->product->stock) {
+                    return redirect()->route('cart.index')
+                        ->with('error', 'Product "' . $item->product->name . '" is out of stock or has limited quantity. Please update your cart.');
+                }
+            }
+
             try {
-                $order = Order::create([
+                $order = $this->createOrderFromCart($cartItems, [
                     'user_id' => Auth::id(),
-                    'total_amount' => $total,
                     'status' => 'pending', // You can set this to 'processing' or 'completed' if paid
                     'shipping_address' => session('shipping_address'),
                     'phone' => session('phone'),
                     'payment_method' => 'online',
                 ]);
-
-                foreach ($cartItems as $cartItem) {
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'product_id' => $cartItem->product_id,
-                        'quantity' => $cartItem->quantity,
-                        'price' => $cartItem->product->price,
-                    ]);
-
-                    $product = Product::find($cartItem->product_id);
-                    $product->stock -= $cartItem->quantity;
-                    $product->save();
-                }
-
-                Cart::where('user_id', Auth::id())->delete();
-                session()->forget(['razorpay_order_id', 'shipping_address', 'phone']);
-
-                DB::commit();
+                session()->forget(['razorpay_order_id', 'shipping_address', 'phone', 'checkout_user_id']);
 
                 return redirect()->route('orders.confirmation', $order->id)
                     ->with('success', 'Payment successful! Order placed.');
             } catch (\Exception $e) {
-                DB::rollBack();
                 return redirect()->route('checkout')->with('error', 'Payment verified but order creation failed: ' . $e->getMessage());
             }
         } else {
@@ -322,14 +300,7 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
-            // Restore stock for each order item
-            foreach ($order->orderItems as $item) {
-                $product = Product::find($item->product_id);
-                if ($product) {
-                    $product->stock += $item->quantity;
-                    $product->save();
-                }
-            }
+            $this->inventoryService->restoreStockForOrderItems($order->orderItems);
 
             // Update order status to cancelled
             $order->status = 'cancelled';
@@ -343,5 +314,27 @@ class OrderController extends Controller
             DB::rollBack();
             return back()->with('error', 'Failed to cancel order. Please try again later.');
         }
+    }
+
+    private function createOrderFromCart(Collection $cartItems, array $orderData): Order
+    {
+        return DB::transaction(function () use ($cartItems, $orderData) {
+            $orderData['total_amount'] = $this->cartService->calculateTotal($cartItems);
+            $order = Order::create($orderData);
+
+            foreach ($cartItems as $cartItem) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $cartItem->product_id,
+                    'quantity' => $cartItem->quantity,
+                    'price' => $cartItem->product->price,
+                ]);
+            }
+
+            $this->inventoryService->deductStockForCartItems($cartItems);
+            $this->cartService->clearUserCart((int) $orderData['user_id']);
+
+            return $order;
+        });
     }
 }

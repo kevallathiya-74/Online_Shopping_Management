@@ -11,7 +11,13 @@ class ProductController extends Controller
     // Show single product detail
     public function show($id)
     {
-        $product = Product::with(['category', 'reviews.user'])->findOrFail($id);
+        $product = Product::with([
+            'category',
+            'reviews' => function ($query) {
+                $query->with('user')->latest();
+            },
+        ])->findOrFail($id);
+
         return view('products.show', compact('product'));
     }
 
@@ -52,7 +58,7 @@ class ProductController extends Controller
             'user_id' => auth()->id(),
             'product_id' => $id,
             'rating' => $request->rating,
-            'review' => $request->review,
+            'review' => $request->filled('review') ? trim(strip_tags($request->review)) : null,
         ]);
 
         return back()->with('success', 'Review submitted successfully!');
@@ -61,10 +67,12 @@ class ProductController extends Controller
     // Filter products by category
     public function byCategory($categoryId)
     {
-        $category = Category::findOrFail($categoryId);
-        $products = Product::where('category_id', $categoryId)->with('category')->paginate(12);
-        $categories = Category::all();
+        Category::findOrFail($categoryId);
 
-        return view('home', compact('products', 'categories', 'category'));
+        $query = request()->query();
+        $query['category_id'] = $categoryId;
+        unset($query['page']);
+
+        return redirect()->route('home', $query);
     }
 }

@@ -29,7 +29,7 @@ class Product extends Model
     // Relationship: Product has many Reviews
     public function reviews()
     {
-        return $this->hasMany(ProductReview::class);
+        return $this->hasMany(Review::class);
     }
 
     // Relationship: Product is in many Wishlists
@@ -42,8 +42,13 @@ class Product extends Model
     public function inWishlist()
     {
         if (auth()->check()) {
+            if ($this->relationLoaded('wishlists')) {
+                return $this->wishlists->contains('user_id', auth()->id());
+            }
+
             return $this->wishlists()->where('user_id', auth()->id())->exists();
         }
+
         return false;
     }
 }

@@ -6,23 +6,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Services\CartService;
 
 class CartController extends Controller
 {
+    private CartService $cartService;
+
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
+
     // Show Cart Page
     public function index()
     {
-        $cartItems = Cart::where('user_id', Auth::id())
-            ->with('product.category')
-            ->get();
-
-        // Calculate total dynamically
-        $total = $cartItems->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
-
-        // Count total items for badge
-        $cartCount = $cartItems->sum('quantity');
+        $cartItems = $this->cartService->getUserCartItems(Auth::id(), true);
+        $total = $this->cartService->calculateTotal($cartItems);
+        $cartCount = $this->cartService->calculateQuantityCount($cartItems);
 
         return view('cart.index', compact('cartItems', 'total', 'cartCount'));
     }
@@ -30,6 +30,10 @@ class CartController extends Controller
     // Add to Cart
     public function add(Request $request, $productId)
     {
+        $request->validate([
+            'quantity' => 'nullable|integer|min:1|max:100',
+        ]);
+
         $product = Product::findOrFail($productId);
 
         // Check if product is in stock
@@ -42,7 +46,7 @@ class CartController extends Controller
             ->where('product_id', $productId)
             ->first();
 
-        $requestedQty = $request->input('quantity', 1);
+        $requestedQty = (int) $request->input('quantity', 1);
 
         if ($cartItem) {
             // Product already in cart — update quantity

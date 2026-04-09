@@ -12,22 +12,24 @@
 
     body {
       font-family: 'DejaVu Sans', sans-serif;
-      color: #333;
+      color: #1f2937;
       font-size: 14px;
+      background: #ffffff;
     }
 
     .invoice-box {
       max-width: 800px;
       margin: auto;
-      border: 1px solid #eee;
-      box-shadow: 0 0 10px rgba(0, 0, 0, .05);
-      padding: 20px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 0 8px rgba(15, 23, 42, 0.06);
+      padding: 22px;
+      border-radius: 10px;
     }
 
     .header {
-      margin-bottom: 20px;
-      border-bottom: 2px solid #0d6efd;
-      padding-bottom: 10px;
+      margin-bottom: 18px;
+      border-bottom: 2px solid #4f46e5;
+      padding-bottom: 12px;
     }
 
     .header table {
@@ -35,9 +37,18 @@
     }
 
     .header h1 {
-      color: #0d6efd;
+      color: #4338ca;
       margin: 0;
-      font-size: 32px;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .brand-cell {
+      vertical-align: top;
+    }
+
+    .brand-subtitle {
+      color: #6b7280;
     }
 
     .invoice-details {
@@ -45,8 +56,16 @@
       vertical-align: top;
     }
 
+    .detail-row {
+      margin-bottom: 4px;
+    }
+
+    .status-row {
+      margin-top: 8px;
+    }
+
     .information {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .information table {
@@ -56,25 +75,34 @@
     .information td {
       vertical-align: top;
       width: 50%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     table.items {
       width: 100%;
       border-collapse: collapse;
+      border: 1px solid #e5e7eb;
     }
 
     table.items th {
-      background: #f8f9fa;
-      border-bottom: 2px solid #dee2e6;
-      color: #495057;
+      background: #f9fafb;
+      border-bottom: 2px solid #d1d5db;
+      color: #374151;
       font-weight: bold;
       text-align: left;
-      padding: 10px;
+      padding: 9px 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
     table.items td {
-      border-bottom: 1px solid #eee;
-      padding: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 9px 10px;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .text-right {
@@ -89,46 +117,53 @@
       font-weight: bold;
     }
 
+    .item-meta {
+      color: #6b7280;
+      font-size: 10px;
+    }
+
     .total-section {
-      margin-top: 20px;
+      margin-top: 16px;
       text-align: right;
     }
 
     .total-table {
-      width: 40%;
+      width: 42%;
       margin-left: auto;
       border-collapse: collapse;
     }
 
     .total-table td {
       padding: 5px;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #e5e7eb;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .grand-total {
       font-size: 18px;
       font-weight: bold;
-      color: #0d6efd;
-      border-top: 2px solid #0d6efd !important;
+      color: #4338ca;
+      border-top: 2px solid #4f46e5 !important;
     }
 
     .footer {
-      margin-top: 40px;
+      margin-top: 30px;
       text-align: center;
       font-size: 12px;
-      color: #777;
-      border-top: 1px solid #eee;
-      padding-top: 10px;
+      color: #6b7280;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 12px;
     }
 
     .badge {
       display: inline-block;
-      padding: 5px 10px;
+      padding: 4px 9px;
       font-size: 11px;
       line-height: 1;
-      border-radius: 4px;
+      border-radius: 999px;
       color: white;
-      background-color: #6c757d;
+      background-color: #6b7280;
       vertical-align: middle;
       margin-left: 5px;
     }
@@ -139,15 +174,16 @@
 
     .badge-pending {
       background-color: #ffc107;
-      color: black;
+      color: #1f2937;
+    }
+
+    .badge-processing {
+      background-color: #0ea5e9;
+      color: #ffffff;
     }
 
     .badge-cancelled {
       background-color: #dc3545;
-    }
-
-    .detail-row {
-      margin-bottom: 4px;
     }
   </style>
 </head>
@@ -158,14 +194,14 @@
     <div class="header">
       <table>
         <tr>
-          <td style="vertical-align: top;">
+          <td class="brand-cell">
             <h1>ShopEasy</h1>
-            <small style="color: #777;">Your trusted online store</small>
+            <small class="brand-subtitle">Your trusted online store</small>
           </td>
           <td class="invoice-details">
             <div class="detail-row"><strong>INVOICE #{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</strong></div>
             <div class="detail-row">Date: {{ $order->created_at->format('F d, Y') }}</div>
-            <div class="detail-row" style="margin-top: 8px;">
+            <div class="detail-row status-row">
               Status: <span class="badge badge-{{ $order->status }}">{{ ucfirst($order->status) }}</span>
             </div>
           </td>
@@ -211,7 +247,7 @@
           <td>{{ $index + 1 }}</td>
           <td>
             <span class="fw-bold">{{ $item->product->name }}</span><br>
-            <small style="color: #666; font-size: 10px;">Category: {{ $item->product->category->name }}</small>
+            <small class="item-meta">Category: {{ $item->product->category->name }}</small>
           </td>
           <td class="text-center">{{ $item->quantity }}</td>
           <td class="text-right">&#8377; {{ number_format($item->price, 2) }}</td>

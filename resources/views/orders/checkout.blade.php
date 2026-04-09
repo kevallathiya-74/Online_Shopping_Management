@@ -4,32 +4,37 @@
 
 @section('content')
 <div class="container">
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="section-header mb-4">
         <div>
-            <h2 class="fw-bold mb-1"><i class="fas fa-credit-card text-primary"></i> Checkout</h2>
-            <p class="text-muted mb-0">Complete your order by providing shipping details</p>
+            <h2 class="section-title mb-1"><i class="fas fa-credit-card text-primary me-2"></i>Checkout</h2>
+            <p class="section-subtitle">Step 1: Shipping details. Step 2: Payment and confirmation.</p>
         </div>
         <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Cart
+            <i class="fas fa-arrow-left me-1"></i>Back to Cart
         </a>
+    </div>
+
+    <div class="section-card mb-4">
+        <div class="card-body py-3 d-flex flex-wrap gap-3 align-items-center">
+            <span class="auth-step active">1</span><span class="small fw-semibold text-muted">Shipping</span>
+            <i class="fas fa-arrow-right text-muted small"></i>
+            <span class="auth-step active">2</span><span class="small fw-semibold text-muted">Payment</span>
+            <i class="fas fa-arrow-right text-muted small"></i>
+            <span class="auth-step">3</span><span class="small fw-semibold text-muted">Place Order</span>
+        </div>
     </div>
 
     <form action="{{ route('orders.place') }}" method="POST" id="checkoutForm">
         @csrf
-        <div class="row">
-            <!-- Shipping & Payment Form -->
-            <div class="col-lg-7 mb-4">
-                <!-- Shipping Information -->
-                <div class="card mb-4">
-                    <div class="card-header py-3">
-                        <h5 class="mb-0 fw-bold"><i class="fas fa-truck text-primary"></i> Shipping Information</h5>
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="section-card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-truck text-primary me-2"></i>Shipping Information</h5>
                     </div>
                     <div class="card-body p-4">
                         <div class="mb-3">
-                            <label for="shipping_address" class="form-label fw-bold">
-                                <i class="fas fa-map-marker-alt"></i> Shipping Address <span class="text-danger">*</span>
-                            </label>
+                            <label for="shipping_address" class="form-label">Shipping Address <span class="text-danger">*</span></label>
                             <textarea class="form-control @error('shipping_address') is-invalid @enderror"
                                 id="shipping_address"
                                 name="shipping_address"
@@ -42,9 +47,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="phone" class="form-label fw-bold">
-                                <i class="fas fa-phone"></i> Phone Number <span class="text-danger">*</span>
-                            </label>
+                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
                             <input type="text"
                                 class="form-control @error('phone') is-invalid @enderror"
                                 id="phone"
@@ -61,10 +64,9 @@
                     </div>
                 </div>
 
-                <!-- Payment Method -->
-                <div class="card">
-                    <div class="card-header py-3">
-                        <h5 class="mb-0 fw-bold"><i class="fas fa-wallet text-success"></i> Payment Method</h5>
+                <div class="section-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-wallet text-success me-2"></i>Payment Method</h5>
                     </div>
                     <div class="card-body p-4">
                         @error('payment_method')
@@ -74,41 +76,31 @@
                         @enderror
 
                         <div class="row g-3">
-                            <!-- Cash on Delivery -->
                             <div class="col-md-6">
-                                <div class="form-check card h-100" style="cursor: pointer;">
-                                    <div class="card-body p-3">
-                                        <input class="form-check-input" type="radio" name="payment_method"
-                                            id="payment_offline" value="offline"
-                                            {{ old('payment_method', 'offline') == 'offline' ? 'checked' : '' }}
-                                            style="position: absolute; top: 15px; right: 15px;">
-                                        <label class="form-check-label d-block" for="payment_offline" style="cursor: pointer;">
-                                            <div class="text-center py-2">
-                                                <i class="fas fa-money-bill-wave fa-2x text-success mb-2"></i>
-                                                <h6 class="fw-bold mb-1">Cash on Delivery</h6>
-                                                <small class="text-muted">Pay when you receive your order</small>
-                                            </div>
-                                        </label>
-                                    </div>
+                                <div class="payment-option h-100">
+                                    <input type="radio" name="payment_method" id="payment_offline" value="offline"
+                                        {{ old('payment_method', 'offline') == 'offline' ? 'checked' : '' }}>
+                                    <label for="payment_offline">
+                                        <div class="text-center py-2">
+                                            <i class="fas fa-money-bill-wave fa-2x text-success mb-2"></i>
+                                            <h6 class="fw-bold mb-1">Cash on Delivery</h6>
+                                            <small class="text-muted">Pay after delivery at your address.</small>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
 
-                            <!-- Online Payment -->
                             <div class="col-md-6">
-                                <div class="form-check card h-100" style="cursor: pointer;">
-                                    <div class="card-body p-3">
-                                        <input class="form-check-input" type="radio" name="payment_method"
-                                            id="payment_online" value="online"
-                                            {{ old('payment_method') == 'online' ? 'checked' : '' }}
-                                            style="position: absolute; top: 15px; right: 15px;">
-                                        <label class="form-check-label d-block" for="payment_online" style="cursor: pointer;">
-                                            <div class="text-center py-2">
-                                                <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
-                                                <h6 class="fw-bold mb-1">Online Payment</h6>
-                                                <small class="text-muted">Pay securely via UPI / Card / Net Banking</small>
-                                            </div>
-                                        </label>
-                                    </div>
+                                <div class="payment-option h-100">
+                                    <input type="radio" name="payment_method" id="payment_online" value="online"
+                                        {{ old('payment_method') == 'online' ? 'checked' : '' }}>
+                                    <label for="payment_online">
+                                        <div class="text-center py-2">
+                                            <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
+                                            <h6 class="fw-bold mb-1">Online Payment</h6>
+                                            <small class="text-muted">UPI, cards, and net banking via Razorpay.</small>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -116,30 +108,27 @@
                 </div>
             </div>
 
-            <!-- Order Summary -->
             <div class="col-lg-5">
-                <div class="card sticky-top" style="top: 20px;">
-                    <div class="card-header py-3" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white;">
-                        <h5 class="mb-0 fw-bold"><i class="fas fa-receipt"></i> Order Summary</h5>
+                <div class="section-card summary-card sticky-top summary-sticky">
+                    <div class="card-header">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-receipt me-1"></i>Order Summary</h5>
                     </div>
                     <div class="card-body p-4">
-                        <!-- Cart Items List -->
                         @foreach($cartItems as $item)
                         <div class="d-flex justify-content-between align-items-start mb-3 {{ !$loop->last ? 'pb-3 border-bottom' : '' }}">
-                            <div class="d-flex align-items-center" style="flex: 1;">
-                                <div style="width: 45px; height: 45px; background: #f8f9fc; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 10px; flex-shrink: 0;">
+                            <div class="d-flex align-items-center flex-fill-min">
+                                <div class="admin-table thumb-box thumb-square-45 me-2">
                                     @if($item->product->image)
                                     <img src="{{ $item->product->image }}"
                                         alt="{{ $item->product->name }}"
-                                        style="max-width: 35px; max-height: 35px; object-fit: contain;"
                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <i class="fas fa-box text-muted" style="display:none;"></i>
+                                    <i class="fas fa-box text-muted d-none"></i>
                                     @else
                                     <i class="fas fa-box text-muted"></i>
                                     @endif
                                 </div>
                                 <div>
-                                    <small class="fw-bold d-block">{{ Str::limit($item->product->name, 25) }}</small>
+                                    <small class="fw-bold d-block text-wrap-anywhere">{{ Str::limit($item->product->name, 25) }}</small>
                                     <small class="text-muted">Qty: {{ $item->quantity }} × ₹{{ number_format($item->product->price, 0) }}</small>
                                 </div>
                             </div>
@@ -173,12 +162,12 @@
 
                         <button type="submit" class="btn btn-success w-100 btn-lg"
                             onclick="return confirm('Are you sure you want to place this order for ₹{{ number_format($total, 2) }}?')">
-                            <i class="fas fa-check-circle"></i> Place Order
+                            <i class="fas fa-check-circle me-1"></i>Place Order
                         </button>
 
                         <div class="text-center mt-3">
                             <small class="text-muted">
-                                <i class="fas fa-lock"></i> Your information is secure and encrypted
+                                <i class="fas fa-lock me-1"></i>Your information is secure and encrypted
                             </small>
                         </div>
                     </div>
@@ -188,7 +177,7 @@
     </form>
 
     <!-- Hidden Form for Razorpay Verification -->
-    <form id="razorpayForm" action="{{ route('payment.verify') }}" method="POST" style="display: none;">
+    <form id="razorpayForm" action="{{ route('payment.verify') }}" method="POST" class="d-none">
         @csrf
         <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
         <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
@@ -246,7 +235,7 @@
                                 "contact": data.contact
                             },
                             "theme": {
-                                "color": "#0d6efd"
+                                "color": "#4f46e5"
                             }
                         };
                         const rzp1 = new Razorpay(options);

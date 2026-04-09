@@ -2,133 +2,113 @@
 
 @section('title', 'Register')
 
+@section('body_class', 'auth-body')
+
 @section('content')
-<div class="container" style="min-height: calc(100vh - 250px); display: flex; align-items: center; padding: 40px 0;">
-    <div class="row justify-content-center w-100">
-        <div class="col-md-6 col-lg-5">
-            <div class="card">
-                <!-- Card Header -->
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <i class="fas fa-user-plus fa-3x mb-3"></i>
-                    <h3 class="mb-0">Create Account</h3>
-                    <p class="mb-0 mt-2">Join us and start shopping today!</p>
-                </div>
-                
-                <!-- Card Body -->
-                <div class="card-body p-4">
-                    <!-- Error Messages -->
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-circle"></i> <strong>Please fix the following:</strong>
-                            <ul class="mb-0 mt-2">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <!-- Registration Form -->
-                    <form action="{{ route('register') }}" method="POST">
-                        @csrf
-                        
-                        <!-- Full Name -->
-                        <div class="mb-3">
-                            <label for="name" class="form-label">
-                                <i class="fas fa-user"></i> Full Name
-                            </label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" name="name" value="{{ old('name') }}" 
-                                   placeholder="Enter your full name" 
-                                   required autofocus>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+<div class="auth-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-11 col-xl-10">
+                <div class="auth-shell">
+                    <div class="row g-0">
+                        <div class="col-md-5 d-none d-md-block">
+                            <div class="auth-hero">
+                                <h2>Create Your Account</h2>
+                                <p>Join ShopEasy to save products, track orders and checkout faster every time.</p>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> One dashboard for all orders</li>
+                                    <li><i class="fas fa-check-circle"></i> Wishlist and quick reorder support</li>
+                                    <li><i class="fas fa-check-circle"></i> Secure profile and password management</li>
+                                </ul>
+                            </div>
                         </div>
 
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">
-                                <i class="fas fa-envelope"></i> Email Address
-                            </label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                   id="email" name="email" value="{{ old('email') }}" 
-                                   placeholder="your@email.com" 
-                                   required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="col-md-7">
+                            <div class="auth-form-panel">
+                                <h3>Create Account</h3>
+                                <p class="auth-note">Use your real details for smooth checkout and delivery communication.</p>
+
+                                @if($errors->any())
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-circle-exclamation me-1"></i>
+                                    <ul class="mb-0 mt-2">
+                                        @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                @endif
+
+                                <form action="{{ route('register') }}" method="POST">
+                                    @csrf
+
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="name" class="form-label">Full Name</label>
+                                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                                id="name" name="name" value="{{ old('name') }}" placeholder="Arjun Mehta" required autofocus>
+                                            @error('name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="email" class="form-label">Email Address</label>
+                                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                                id="email" name="email" value="{{ old('email') }}" placeholder="you@example.com" required>
+                                            @error('email')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="phone" class="form-label">Phone Number <span class="text-muted fw-normal">(Optional)</span></label>
+                                            <input type="text" class="form-control @error('phone') is-invalid @enderror"
+                                                id="phone" name="phone" value="{{ old('phone') }}" placeholder="9876543210">
+                                            @error('phone')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="address" class="form-label">Address <span class="text-muted fw-normal">(Optional)</span></label>
+                                            <textarea class="form-control @error('address') is-invalid @enderror"
+                                                id="address" name="address" rows="1" placeholder="Street, city, state">{{ old('address') }}</textarea>
+                                            @error('address')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="password" class="form-label">Password</label>
+                                            <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                                id="password" name="password" placeholder="Minimum 8 characters" required>
+                                            @error('password')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="password_confirmation" class="form-label">Confirm Password</label>
+                                            <input type="password" class="form-control"
+                                                id="password_confirmation" name="password_confirmation" placeholder="Re-enter password" required>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary w-100 py-2 mt-4">
+                                        <i class="fas fa-user-plus me-1"></i>Create Account
+                                    </button>
+                                </form>
+
+                                <hr class="my-4">
+
+                                <p class="text-center mb-0 small">
+                                    Already registered?
+                                    <a href="{{ route('login') }}" class="fw-bold ms-1">Login here</a>
+                                </p>
+                            </div>
                         </div>
-
-                        <!-- Phone (Optional) -->
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">
-                                <i class="fas fa-phone"></i> Phone Number <span class="text-muted">(Optional)</span>
-                            </label>
-                            <input type="text" class="form-control @error('phone') is-invalid @enderror" 
-                                   id="phone" name="phone" value="{{ old('phone') }}" 
-                                   placeholder="e.g., 9876543210">
-                            @error('phone')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Address (Optional) -->
-                        <div class="mb-3">
-                            <label for="address" class="form-label">
-                                <i class="fas fa-map-marker-alt"></i> Address <span class="text-muted">(Optional)</span>
-                            </label>
-                            <textarea class="form-control @error('address') is-invalid @enderror" 
-                                      id="address" name="address" rows="2" 
-                                      placeholder="Your delivery address">{{ old('address') }}</textarea>
-                            @error('address')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label">
-                                <i class="fas fa-lock"></i> Password
-                            </label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" name="password" 
-                                   placeholder="Minimum 8 characters" 
-                                   style="border-radius: 10px; padding: 12px 20px; border: 2px solid #e5e7eb;" 
-                                   required>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="mb-4">
-                            <label for="password_confirmation" class="form-label fw-bold">
-                                <i class="fas fa-lock"></i> Confirm Password
-                            </label>
-                            <input type="password" class="form-control" 
-                                   id="password_confirmation" name="password_confirmation" 
-                                   placeholder="Re-enter your password" 
-                                   style="border-radius: 10px; padding: 12px 20px; border: 2px solid #e5e7eb;" 
-                                   required>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary w-100 mb-3" 
-                                style="border-radius: 10px; padding: 14px; font-weight: 600;">
-                            <i class="fas fa-user-plus"></i> Create Account
-                        </button>
-                    </form>
-
-                    <hr style="margin: 25px 0;">
-                    
-                    <!-- Login Link -->
-                    <p class="text-center mb-0">
-                        Already have an account? 
-                        <a href="{{ route('login') }}" style="color: #4f46e5; font-weight: 600; text-decoration: none;">
-                            <i class="fas fa-sign-in-alt"></i> Login Here
-                        </a>
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>
