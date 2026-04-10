@@ -3,17 +3,16 @@
 @section('title', 'Edit Category')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <div>
-            <h2><i class="fas fa-pen-to-square me-2"></i>Edit Category</h2>
-            <p>Update category: <strong>{{ $category->name }}</strong></p>
-        </div>
+<x-page-header
+    title="Edit Category"
+    subtitle="Update category: {{ $category->name }}"
+    icon="fas fa-pen-to-square">
+    <x-slot name="actions">
         <a href="{{ route('admin.categories') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i>Back to Categories
         </a>
-    </div>
-</div>
+    </x-slot>
+</x-page-header>
 
 <div class="section-card">
     <div class="card-header">

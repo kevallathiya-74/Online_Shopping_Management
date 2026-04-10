@@ -4,15 +4,16 @@
 
 @section('content')
 <div class="container">
-    <div class="section-header mb-4">
-        <div>
-            <h2 class="section-title mb-1"><i class="fas fa-receipt text-primary me-2"></i>Order #{{ $order->id }}</h2>
-            <p class="section-subtitle">Placed on {{ $order->created_at->format('d M Y, h:i A') }}</p>
-        </div>
-        <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to Orders
-        </a>
-    </div>
+    <x-page-header
+        title="Order #{{ $order->id }}"
+        subtitle="Placed on {{ $order->created_at->format('d M Y, h:i A') }}"
+        icon="fas fa-receipt">
+        <x-slot name="actions">
+            <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Orders
+            </a>
+        </x-slot>
+    </x-page-header>
 
     <div class="row g-4">
         <div class="col-lg-8">
@@ -24,7 +25,7 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="table-responsive">
-                            <table class="table table-borderless mb-0">
+                            <table class="table table-borderless meta-table">
                                 <tr>
                                     <td class="text-muted fw-semibold meta-label-col">Order ID</td>
                                     <td><span class="badge bg-dark-subtle text-dark border">#{{ $order->id }}</span></td>
@@ -36,18 +37,7 @@
                                 <tr>
                                     <td class="text-muted fw-semibold">Status</td>
                                     <td>
-                                        <span class="badge badge-status-{{ $order->status }}">
-                                            @if($order->status == 'completed')
-                                            <i class="fas fa-check-circle"></i>
-                                            @elseif($order->status == 'cancelled')
-                                            <i class="fas fa-times-circle"></i>
-                                            @elseif($order->status == 'processing')
-                                            <i class="fas fa-spinner"></i>
-                                            @else
-                                            <i class="fas fa-clock"></i>
-                                            @endif
-                                            {{ ucfirst($order->status) }}
-                                        </span>
+                                        <x-order-status-badge :status="$order->status" />
                                     </td>
                                 </tr>
                             </table>
@@ -56,15 +46,11 @@
 
                         <div class="col-md-6">
                             <div class="table-responsive">
-                            <table class="table table-borderless mb-0">
+                            <table class="table table-borderless meta-table">
                                 <tr>
                                     <td class="text-muted fw-semibold meta-label-col">Payment</td>
                                     <td>
-                                        @if($order->payment_method == 'online')
-                                        <span class="badge bg-primary"><i class="fas fa-credit-card me-1"></i>Online Payment</span>
-                                        @else
-                                        <span class="badge bg-secondary"><i class="fas fa-money-bill-wave me-1"></i>Cash on Delivery</span>
-                                        @endif
+                                        <x-payment-method-badge :method="$order->payment_method" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -141,20 +127,22 @@
                     <h5 class="mb-0 fw-bold"><i class="fas fa-file-invoice me-1"></i>Summary</h5>
                 </div>
                 <div class="card-body p-4">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Items</span>
-                        <strong>{{ $order->orderItems->count() }}</strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Total Quantity</span>
-                        <strong>{{ $order->orderItems->sum('quantity') }}</strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Shipping</span>
-                        <strong class="text-success">FREE</strong>
+                    <div class="summary-list">
+                        <div class="summary-row">
+                            <span class="text-muted">Items</span>
+                            <strong>{{ $order->orderItems->count() }}</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span class="text-muted">Total Quantity</span>
+                            <strong>{{ $order->orderItems->sum('quantity') }}</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span class="text-muted">Shipping</span>
+                            <strong class="text-success">FREE</strong>
+                        </div>
                     </div>
                     <hr>
-                    <div class="d-flex justify-content-between mb-3">
+                    <div class="summary-row mb-3">
                         <h5 class="fw-bold mb-0">Total</h5>
                         <h4 class="text-success fw-bold mb-0">₹{{ number_format($order->total_amount, 2) }}</h4>
                     </div>
@@ -197,3 +185,4 @@
     </div>
 </div>
 @endsection
+

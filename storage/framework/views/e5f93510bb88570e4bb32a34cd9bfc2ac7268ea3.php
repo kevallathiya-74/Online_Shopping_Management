@@ -13,124 +13,38 @@
 </head>
 
 <body class="app-shell <?php echo $__env->yieldContent('body_class'); ?>">
-    <nav class="navbar navbar-expand-lg site-navbar sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="<?php echo e(route('home')); ?>">
-                <span class="brand-badge"><i class="fas fa-bag-shopping"></i></span>
-                <span>ShopEasy</span>
-            </a>
+    <?php if (isset($component)) { $__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4 = $component; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.navbar','data' => ['cartCount' => $layoutCartCount ?? 0]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component->withName('navbar'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
+<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['cart-count' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($layoutCartCount ?? 0)]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4)): ?>
+<?php $component = $__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4; ?>
+<?php unset($__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4); ?>
+<?php endif; ?>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#siteNavbarNav" aria-controls="siteNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="siteNavbarNav">
-                <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->routeIs('home') ? 'active' : ''); ?>" href="<?php echo e(route('home')); ?>" title="Home">
-                            <i class="fas fa-house me-1"></i>Home
-                        </a>
-                    </li>
-
-                    <?php if(auth()->guard()->check()): ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->routeIs('user.dashboard') ? 'active' : ''); ?>" href="<?php echo e(route('user.dashboard')); ?>">
-                            <i class="fas fa-chart-line me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->routeIs('orders.*') ? 'active' : ''); ?>" href="<?php echo e(route('orders.index')); ?>">
-                            <i class="fas fa-box-open me-1"></i>Orders
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->routeIs('wishlist.*') ? 'active' : ''); ?>" href="<?php echo e(route('wishlist.index')); ?>">
-                            <i class="fas fa-heart me-1"></i>Wishlist
-                        </a>
-                    </li>
-                    <?php endif; ?>
-                </ul>
-
-                <div class="site-nav-actions ms-lg-auto">
-                    <?php if(auth()->guard()->check()): ?>
-                    <a class="btn btn-outline-primary cart-link <?php echo e(request()->routeIs('cart.index') ? 'active' : ''); ?>" href="<?php echo e(route('cart.index')); ?>">
-                        <i class="fas fa-cart-shopping"></i>
-                        <span class="ms-1">Cart</span>
-                        <?php if(($layoutCartCount ?? 0) > 0): ?>
-                        <span class="cart-count"><?php echo e($layoutCartCount); ?></span>
-                        <?php endif; ?>
-                    </a>
-
-                    <?php if(Auth::user()->isAdmin()): ?>
-                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="btn btn-outline-secondary">
-                        <i class="fas fa-shield-halved"></i>
-                        <span class="ms-1">Admin</span>
-                    </a>
-                    <?php endif; ?>
-
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user"></i>
-                            <span class="ms-1 nav-user-name"><?php echo e(Auth::user()->name); ?></span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="<?php echo e(route('user.dashboard')); ?>"><i class="fas fa-chart-line me-2 text-primary"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="<?php echo e(route('user.profile')); ?>"><i class="fas fa-user-pen me-2 text-info"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="<?php echo e(route('orders.index')); ?>"><i class="fas fa-box-open me-2 text-success"></i>Orders</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form action="<?php echo e(route('logout')); ?>" method="POST">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fas fa-arrow-right-from-bracket me-2"></i>Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                    <?php else: ?>
-                    <a href="<?php echo e(route('login')); ?>" class="btn btn-outline-secondary">
-                        <i class="fas fa-right-to-bracket me-1"></i>Login
-                    </a>
-                    <a href="<?php echo e(route('register')); ?>" class="btn btn-primary">
-                        <i class="fas fa-user-plus me-1"></i>Register
-                    </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-3">
-        <?php if(session('success')): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert" data-auto-dismiss="true">
-            <i class="fas fa-check-circle"></i> <?php echo e(session('success')); ?>
-
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php endif; ?>
-
-        <?php if(session('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" data-auto-dismiss="true">
-            <i class="fas fa-exclamation-circle"></i> <?php echo e(session('error')); ?>
-
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php endif; ?>
-
-        <?php if($errors->any() && !request()->routeIs('user.profile') && !request()->routeIs('checkout')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle"></i> <strong>Please fix the following:</strong>
-            <ul class="mb-0 mt-1">
-                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <li><?php echo e($error); ?></li>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php endif; ?>
+    <div class="container component-alerts mt-3">
+        <?php if (isset($component)) { $__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4 = $component; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.flash-messages','data' => ['suppressErrors' => request()->routeIs('user.profile') || request()->routeIs('checkout') || request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component->withName('flash-messages'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
+<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['suppress-errors' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(request()->routeIs('user.profile') || request()->routeIs('checkout') || request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*'))]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4)): ?>
+<?php $component = $__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4; ?>
+<?php unset($__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4); ?>
+<?php endif; ?>
     </div>
 
     <main class="site-main">
@@ -182,4 +96,5 @@
     <?php echo $__env->yieldContent('scripts'); ?>
 </body>
 
-</html><?php /**PATH C:\xampp\htdocs\Online_Shopping_Management\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+</html>
+<?php /**PATH C:\xampp\htdocs\Online_Shopping_Management\resources\views/layouts/app.blade.php ENDPATH**/ ?>

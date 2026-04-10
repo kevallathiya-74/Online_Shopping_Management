@@ -148,7 +148,7 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <div class="mb-3">
                     <label class="form-label">Your Rating</label>
-                    <div class="btn-group" role="group" aria-label="Rating selector">
+                    <div class="d-flex flex-wrap gap-2" role="group" aria-label="Rating selector">
                         @for($i = 1; $i <= 5; $i++)
                         <input type="radio" class="btn-check" name="rating" id="rating{{ $i }}" value="{{ $i }}" {{ (int) old('rating', 5) === $i ? 'checked' : '' }}>
                         <label class="btn btn-outline-warning" for="rating{{ $i }}">{{ $i }} <i class="fas fa-star"></i></label>
@@ -196,7 +196,10 @@
             <hr class="my-3">
             @endif
             @empty
-            <p class="text-muted text-center py-3">No reviews yet. Be the first to review!</p>
+            <x-empty-state
+                icon="fas fa-star"
+                title="No reviews yet"
+                description="Be the first customer to share feedback about this product." />
             @endforelse
         </div>
     </div>

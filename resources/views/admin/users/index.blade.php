@@ -3,21 +3,18 @@
 @section('title', 'User Management')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-            <h2><i class="fas fa-users-cog me-2"></i>User Management</h2>
-            <p>Manage account roles and maintain secure platform access control.</p>
-        </div>
-    </div>
-</div>
+<x-page-header
+    title="User Management"
+    subtitle="Manage account roles and maintain secure platform access control."
+    icon="fas fa-users-cog"
+    badge="{{ $userStats['total'] }} Users" />
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         <div class="section-card h-100">
             <div class="card-body text-center p-4">
                 <div class="small text-muted mb-1">Total Users</div>
-                <div class="h3 fw-bold text-primary mb-0">{{ $users->total() }}</div>
+                <div class="h3 fw-bold text-primary mb-0">{{ $userStats['total'] }}</div>
             </div>
         </div>
     </div>
@@ -26,7 +23,7 @@
         <div class="section-card h-100">
             <div class="card-body text-center p-4">
                 <div class="small text-muted mb-1">Admins</div>
-                <div class="h3 fw-bold text-danger mb-0">{{ $users->where('role', 'admin')->count() }}</div>
+                <div class="h3 fw-bold text-danger mb-0">{{ $userStats['admins'] }}</div>
             </div>
         </div>
     </div>
@@ -35,7 +32,7 @@
         <div class="section-card h-100">
             <div class="card-body text-center p-4">
                 <div class="small text-muted mb-1">Regular Users</div>
-                <div class="h3 fw-bold text-success mb-0">{{ $users->where('role', 'user')->count() }}</div>
+                <div class="h3 fw-bold text-success mb-0">{{ $userStats['users'] }}</div>
             </div>
         </div>
     </div>
@@ -105,12 +102,14 @@
                             @if($user->id === Auth::id())
                             <span class="text-muted"><i class="fas fa-lock"></i></span>
                             @else
-                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="d-inline"
-                                onsubmit="return confirm('Are you sure you want to delete user: {{ $user->name }}? This action cannot be undone.')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                            </form>
+                            <div class="table-actions justify-center">
+                                <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="d-inline"
+                                    onsubmit="return confirm('Are you sure you want to delete user: {{ $user->name }}? This action cannot be undone.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </div>
                             @endif
                         </td>
                     </tr>

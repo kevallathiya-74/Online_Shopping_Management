@@ -246,8 +246,8 @@
         <tr>
           <td>{{ $index + 1 }}</td>
           <td>
-            <span class="fw-bold">{{ $item->product->name }}</span><br>
-            <small class="item-meta">Category: {{ $item->product->category->name }}</small>
+            <span class="fw-bold">{{ $item->product?->name ?? 'Product Deleted' }}</span><br>
+            <small class="item-meta">Category: {{ $item->product?->category?->name ?? 'Unavailable' }}</small>
           </td>
           <td class="text-center">{{ $item->quantity }}</td>
           <td class="text-right">&#8377; {{ number_format($item->price, 2) }}</td>

@@ -3,17 +3,16 @@
 @section('title', 'Order Details - #' . $order->id)
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-            <h2><i class="fas fa-receipt me-2"></i>Order Details - #{{ $order->id }}</h2>
-            <p>Review customer information, line items, and update order status.</p>
-        </div>
+<x-page-header
+    title="Order Details - #{{ $order->id }}"
+    subtitle="Review customer information, line items, and update order status."
+    icon="fas fa-receipt">
+    <x-slot name="actions">
         <a href="{{ route('admin.orders') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i>Back to Orders
         </a>
-    </div>
-</div>
+    </x-slot>
+</x-page-header>
 
 <div class="row g-4 mb-4">
     <div class="col-md-6">
@@ -23,7 +22,7 @@
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                <table class="table table-borderless mb-0">
+                <table class="table table-borderless meta-table">
                     <tr>
                         <td class="text-muted fw-semibold meta-label-col">Name</td>
                         <td>{{ $order->user->name }}</td>
@@ -53,7 +52,7 @@
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                <table class="table table-borderless mb-0">
+                <table class="table table-borderless meta-table">
                     <tr>
                         <td class="text-muted fw-semibold meta-label-col">Order ID</td>
                         <td><span class="badge bg-dark-subtle text-dark border">#{{ $order->id }}</span></td>
@@ -64,7 +63,7 @@
                     </tr>
                     <tr>
                         <td class="text-muted fw-semibold">Status</td>
-                        <td><span class="badge badge-status-{{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
+                        <td><x-order-status-badge :status="$order->status" /></td>
                     </tr>
                     <tr>
                         <td class="text-muted fw-semibold">Total Amount</td>
@@ -72,13 +71,7 @@
                     </tr>
                     <tr>
                         <td class="text-muted fw-semibold">Payment</td>
-                        <td>
-                            @if($order->payment_method == 'online')
-                            <span class="badge bg-primary">Online Payment</span>
-                            @else
-                            <span class="badge bg-secondary">Cash on Delivery</span>
-                            @endif
-                        </td>
+                        <td><x-payment-method-badge :method="$order->payment_method" /></td>
                     </tr>
                 </table>
                 </div>
@@ -135,7 +128,7 @@
                 @foreach($order->orderItems as $index => $item)
                 <tr>
                     <td><span class="badge bg-dark-subtle text-dark border">{{ $index + 1 }}</span></td>
-                    <td><strong class="text-wrap-anywhere d-inline-block">{{ $item->product->name ?? 'Product Deleted' }}</strong></td>
+                    <td><strong class="text-wrap-anywhere d-inline-block">{{ $item->product?->name ?? 'Product Deleted' }}</strong></td>
                     <td>
                         @if($item->product && $item->product->category)
                         <span class="badge bg-light text-dark border">{{ $item->product->category->name }}</span>
@@ -159,3 +152,4 @@
     </div>
 </div>
 @endsection
+

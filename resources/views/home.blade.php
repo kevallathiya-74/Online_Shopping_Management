@@ -3,7 +3,7 @@
 @section('title', isset($category) ? $category->name . ' - ShopEasy' : 'Home - ShopEasy')
 
 @section('content')
-<div class="container">
+<div class="container home-catalog">
     <div class="section-card hero-banner mb-4">
         <div class="card-body p-4 p-lg-5">
             <span class="hero-highlight mb-3"><i class="fas fa-bolt"></i> New arrivals every week</span>
@@ -31,25 +31,46 @@
         </div>
     </div>
 
-    <div class="section-card mb-4">
+    <div class="section-card category-strip mb-4">
         <div class="card-body">
-            <div class="section-header">
+            <div class="section-header category-strip-header">
                 <div>
                     <h3 class="section-title"><i class="fas fa-layer-group me-2 text-primary"></i>Shop by Category</h3>
                     <p class="section-subtitle">Pick a category to quickly narrow your results.</p>
                 </div>
+                <div class="category-strip-meta">
+                    <span class="badge badge-soft category-count">{{ $categories->count() + 1 }} categories</span>
+                </div>
             </div>
 
-            <div>
-                <a href="{{ route('home', request()->except(['category_id', 'page'])) }}" class="category-pill {{ !request('category_id') ? 'active' : '' }}">
-                    <i class="fas fa-grid-2"></i>All Products
-                </a>
-                @foreach($categories as $cat)
-                <a href="{{ route('home', array_merge(request()->except(['category_id', 'page']), ['category_id' => $cat->id])) }}"
-                    class="category-pill {{ (string) request('category_id') === (string) $cat->id ? 'active' : '' }}">
-                    <i class="fas fa-tag"></i>{{ $cat->name }}
-                </a>
-                @endforeach
+            @php
+            $categoryIconMap = [
+            'electronics' => 'fa-bolt',
+            'clothing' => 'fa-shirt',
+            'books' => 'fa-book',
+            'home & kitchen' => 'fa-house',
+            'sports' => 'fa-dumbbell',
+            ];
+            @endphp
+
+            <div class="category-pills-wrap" aria-label="Product categories">
+                <div class="category-pills">
+                    <a href="{{ route('home', request()->except(['category_id', 'page'])) }}" class="category-pill {{ !request('category_id') ? 'active' : '' }}" @if(!request('category_id')) aria-current="page" @endif>
+                        <span class="pill-icon" aria-hidden="true"><i class="fas fa-boxes-stacked"></i></span>
+                        <span class="category-pill-label">All Products</span>
+                    </a>
+                    @foreach($categories as $cat)
+                    @php
+                    $categoryKey = strtolower(trim($cat->name));
+                    $categoryIcon = $categoryIconMap[$categoryKey] ?? 'fa-tag';
+                    @endphp
+                    <a href="{{ route('home', array_merge(request()->except(['category_id', 'page']), ['category_id' => $cat->id])) }}"
+                        class="category-pill {{ (string) request('category_id') === (string) $cat->id ? 'active' : '' }}" @if((string) request('category_id') === (string) $cat->id) aria-current="page" @endif>
+                        <span class="pill-icon" aria-hidden="true"><i class="fas {{ $categoryIcon }}"></i></span>
+                        <span class="category-pill-label">{{ $cat->name }}</span>
+                    </a>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
@@ -107,30 +128,22 @@
         </div>
 
         <div class="col-lg-9">
-            <div class="section-header mb-3">
+            <div class="section-header products-header mb-3">
                 <div>
                     <h3 class="section-title mb-1">{{ isset($category) ? $category->name : 'All Products' }}</h3>
                     <p class="section-subtitle">Curated listing with clean product details and fast actions.</p>
                 </div>
-                <span class="badge-soft">{{ $products->total() }} products</span>
             </div>
 
             @if($products->isEmpty())
             <div class="section-card">
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-box-open"></i></div>
-                    <h5 class="fw-bold">No products found</h5>
-                    <p class="text-muted mb-3">
-                        @if(isset($category))
-                        Nothing is available in "{{ $category->name }}" right now.
-                        @elseif(request('search') || request('min_price') || request('max_price'))
-                        No results match your search or filter combination.
-                        @else
-                        Products will appear here as soon as inventory is added.
-                        @endif
-                    </p>
+                <x-empty-state icon="fas fa-box-open" title="No products found" :description="isset($category)
+                    ? 'Nothing is available in ' . $category->name . ' right now.'
+                    : ((request('search') || request('min_price') || request('max_price'))
+                        ? 'No results match your search or filter combination.'
+                        : 'Products will appear here as soon as inventory is added.')">
                     <a href="{{ route('home') }}" class="btn btn-outline-primary">View all products</a>
-                </div>
+                </x-empty-state>
             </div>
             @else
             <div class="row g-4">
@@ -228,7 +241,7 @@
     @endphp
 
     @if($featuredProducts->isNotEmpty())
-    <div class="section-card mt-4">
+    <div class="section-card mt-4 featured-week-section">
         <div class="card-body">
             <div class="section-header">
                 <div>
@@ -237,23 +250,21 @@
                 </div>
             </div>
 
-            <div class="row g-3">
+            <div class="row g-3 featured-product-grid">
                 @foreach($featuredProducts as $featured)
                 <div class="col-md-4">
-                    <a href="{{ route('products.show', $featured->id) }}" class="section-card d-block p-3 h-100 text-dark">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="admin-table thumb-box thumb-square-64">
-                                @if($featured->image)
-                                <img src="{{ $featured->image }}" alt="{{ $featured->name }}">
-                                @else
-                                <i class="fas fa-image text-muted"></i>
-                                @endif
-                            </div>
-                            <div>
-                                <div class="fw-bold">{{ Str::limit($featured->name, 30) }}</div>
-                                <div class="small text-muted">{{ $featured->category->name }}</div>
-                                <div class="fw-bold mt-1">₹{{ number_format($featured->price, 0) }}</div>
-                            </div>
+                    <a href="{{ route('products.show', $featured->id) }}" class="featured-product-card">
+                        <div class="thumb-box thumb-square-64 featured-product-thumb">
+                            @if($featured->image)
+                            <img src="{{ $featured->image }}" alt="{{ $featured->name }}">
+                            @else
+                            <i class="fas fa-image text-muted"></i>
+                            @endif
+                        </div>
+                        <div class="featured-product-meta">
+                            <div class="featured-product-title">{{ Str::limit($featured->name, 30) }}</div>
+                            <div class="featured-product-category">{{ $featured->category->name }}</div>
+                            <div class="featured-product-price">₹{{ number_format($featured->price, 0) }}</div>
                         </div>
                     </a>
                 </div>

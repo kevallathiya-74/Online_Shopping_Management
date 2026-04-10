@@ -4,11 +4,11 @@
 
 @section('content')
 <div class="container">
-    <div class="section-header mb-4">
-        <div>
-            <h2 class="section-title mb-1"><i class="fas fa-box-open text-primary me-2"></i>My Orders</h2>
-            <p class="section-subtitle">Track order status, amounts, and delivery details from one place.</p>
-        </div>
+    <x-page-header
+        title="My Orders"
+        subtitle="Track order status, payment details, and delivery information from one place."
+        icon="fas fa-box-open">
+        <x-slot name="actions">
         <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end">
             <a href="{{ route('user.dashboard') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-1"></i>Dashboard
@@ -17,44 +17,30 @@
                 <i class="fas fa-bag-shopping me-1"></i>Shop More
             </a>
         </div>
-    </div>
+        </x-slot>
+    </x-page-header>
 
     @if($orders->isEmpty())
     <div class="section-card">
-        <div class="empty-state">
-            <div class="empty-icon"><i class="fas fa-box-open"></i></div>
-            <h4 class="mb-2 fw-bold">No orders yet</h4>
-            <p class="text-muted mb-4">Your placed orders will appear here with live status updates.</p>
+        <x-empty-state
+            icon="fas fa-box-open"
+            title="No orders yet"
+            description="Your placed orders will appear here with live status updates.">
             <a href="{{ route('home') }}" class="btn btn-primary btn-lg"><i class="fas fa-bag-shopping me-1"></i>Start Shopping</a>
-        </div>
+        </x-empty-state>
     </div>
     @else
     @foreach($orders as $order)
     <div class="section-card mb-3">
         <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div class="d-flex align-items-center gap-3">
-                    <span class="badge bg-dark-subtle text-dark border">Order #{{ $order->id }}</span>
-                    <span class="badge badge-status-{{ $order->status }}">
-                        @if($order->status == 'completed')
-                        <i class="fas fa-check-circle"></i>
-                        @elseif($order->status == 'cancelled')
-                        <i class="fas fa-times-circle"></i>
-                        @elseif($order->status == 'processing')
-                        <i class="fas fa-spinner"></i>
-                        @else
-                        <i class="fas fa-clock"></i>
-                        @endif
-                        {{ ucfirst($order->status) }}
-                    </span>
-                    @if($order->payment_method == 'online')
-                    <span class="badge bg-primary"><i class="fas fa-credit-card me-1"></i>Online</span>
-                    @else
-                    <span class="badge bg-secondary"><i class="fas fa-money-bill-wave me-1"></i>COD</span>
-                    @endif
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-dark-subtle text-dark border">Order #{{ $order->id }}</span>
+                        <x-order-status-badge :status="$order->status" />
+                        <x-payment-method-badge :method="$order->payment_method" />
+                    </div>
+                    <small class="text-muted"><i class="fas fa-calendar me-1"></i>{{ $order->created_at->format('d M Y, h:i A') }}</small>
                 </div>
-                <small class="text-muted"><i class="fas fa-calendar me-1"></i>{{ $order->created_at->format('d M Y, h:i A') }}</small>
-            </div>
         </div>
 
         <div class="card-body p-4">
@@ -64,7 +50,7 @@
                     <div class="d-flex flex-wrap gap-2 mb-2">
                         @foreach($order->orderItems as $item)
                         <span class="badge bg-light text-dark border text-wrap-anywhere">
-                            {{ $item->product->name ?? 'Deleted Product' }} x {{ $item->quantity }}
+                            {{ $item->product?->name ?? 'Deleted Product' }} x {{ $item->quantity }}
                         </span>
                         @endforeach
                     </div>
@@ -76,7 +62,7 @@
 
                 <div class="col-md-4 text-md-end">
                     <div class="h4 text-success fw-bold mb-3">₹{{ number_format($order->total_amount, 2) }}</div>
-                    <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                    <div class="table-actions">
                         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-primary btn-sm">
                             <i class="fas fa-eye me-1"></i>Details
                         </a>
@@ -108,3 +94,4 @@
     @endif
 </div>
 @endsection
+

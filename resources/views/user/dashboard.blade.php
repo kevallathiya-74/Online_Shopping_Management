@@ -85,16 +85,12 @@
                             <td><span class="badge bg-light text-dark border">{{ $order->orderItems->count() }} item(s)</span></td>
                             <td class="fw-bold text-success">₹{{ number_format($order->total_amount, 2) }}</td>
                             <td>
-                                @if($order->payment_method == 'online')
-                                <span class="badge bg-primary">Online</span>
-                                @else
-                                <span class="badge bg-secondary">COD</span>
-                                @endif
+                                <x-payment-method-badge :method="$order->payment_method" />
                             </td>
-                            <td><span class="badge badge-status-{{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
+                            <td><x-order-status-badge :status="$order->status" /></td>
                             <td><small class="text-muted">{{ $order->created_at->format('d M Y') }}</small></td>
                             <td class="text-center">
-                                <div class="d-flex gap-1 justify-content-center">
+                                <div class="table-actions justify-center">
                                     <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">View</a>
                                     @if($order->status == 'pending')
                                     <form action="{{ route('orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Cancel Order #{{ $order->id }}?');">
@@ -115,3 +111,4 @@
     </div>
 </div>
 @endsection
+

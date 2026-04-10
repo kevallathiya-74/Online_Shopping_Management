@@ -3,17 +3,17 @@
 @section('title', 'Manage Products')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-            <h2><i class="fas fa-box-open me-2"></i>Products Management</h2>
-            <p>Manage inventory, pricing, and product quality across your catalog.</p>
-        </div>
+<x-page-header
+    title="Products Management"
+    subtitle="Manage inventory, pricing, and product quality across your catalog."
+    icon="fas fa-box-open"
+    badge="{{ $products->total() }} Products">
+    <x-slot name="actions">
         <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
             <i class="fas fa-plus-circle me-1"></i>Add New Product
         </a>
-    </div>
-</div>
+    </x-slot>
+</x-page-header>
 
 <div class="section-card admin-table">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -64,7 +64,7 @@
                             <br><small class="text-muted">{{ Str::limit($product->description, 70) }}</small>
                             @endif
                         </td>
-                        <td><span class="badge bg-light text-dark border">{{ $product->category->name ?? 'N/A' }}</span></td>
+                        <td><span class="badge bg-light text-dark border">{{ $product->category?->name ?? 'Uncategorized' }}</span></td>
                         <td><strong class="text-success">₹{{ number_format($product->price, 2) }}</strong></td>
                         <td class="text-center">
                             @if($product->stock > 10)
@@ -76,13 +76,15 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
-                            <form action="{{ route('admin.products.delete', $product->id) }}" method="POST" class="d-inline"
-                                onsubmit="return confirm('Are you sure you want to delete product: {{ $product->name }}?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                            </form>
+                            <div class="table-actions justify-center">
+                                <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <form action="{{ route('admin.products.delete', $product->id) }}" method="POST" class="d-inline"
+                                    onsubmit="return confirm('Are you sure you want to delete product: {{ $product->name }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
@@ -102,3 +104,4 @@
     @endif
 </div>
 @endsection
+

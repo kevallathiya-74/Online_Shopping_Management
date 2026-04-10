@@ -3,14 +3,11 @@
 @section('title', 'Manage Orders')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-            <h2><i class="fas fa-bag-shopping me-2"></i>Orders Management</h2>
-            <p>Review customer orders, update statuses, and monitor fulfillment flow.</p>
-        </div>
-    </div>
-</div>
+<x-page-header
+    title="Orders Management"
+    subtitle="Review customer orders, update statuses, and monitor fulfillment flow."
+    icon="fas fa-bag-shopping"
+    badge="{{ $orders->total() }} Orders" />
 
 <div class="section-card admin-table">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -50,13 +47,7 @@
                         </td>
                         <td><span class="badge bg-light text-dark border">{{ $order->orderItems->count() }} item(s)</span></td>
                         <td class="fw-bold text-success">₹{{ number_format($order->total_amount, 2) }}</td>
-                        <td>
-                            @if($order->payment_method == 'online')
-                            <span class="badge bg-primary"><i class="fas fa-credit-card me-1"></i>Online</span>
-                            @else
-                            <span class="badge bg-secondary"><i class="fas fa-money-bill-wave me-1"></i>COD</span>
-                            @endif
-                        </td>
+                        <td><x-payment-method-badge :method="$order->payment_method" /></td>
                         <td>
                             <form action="{{ route('admin.orders.status', $order->id) }}" method="POST" class="d-inline">
                                 @csrf
@@ -95,3 +86,4 @@
     @endif
 </div>
 @endsection
+

@@ -4,24 +4,25 @@
 
 @section('content')
 <div class="container">
-    <div class="section-header mb-4">
-        <div>
-            <h2 class="section-title mb-1"><i class="fas fa-heart text-danger me-2"></i>My Wishlist</h2>
-            <p class="section-subtitle">Save favorite products and move them to cart whenever you are ready.</p>
-        </div>
-        <a href="{{ route('home') }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left me-1"></i>Continue Shopping
-        </a>
-    </div>
+    <x-page-header
+        title="My Wishlist"
+        subtitle="Save favorite products and move them to cart whenever you are ready."
+        icon="fas fa-heart">
+        <x-slot name="actions">
+            <a href="{{ route('home') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Continue Shopping
+            </a>
+        </x-slot>
+    </x-page-header>
 
     @if($wishlistItems->isEmpty())
     <div class="section-card">
-        <div class="empty-state">
-            <div class="empty-icon"><i class="fas fa-heart-crack"></i></div>
-            <h5 class="fw-bold mb-2">Your wishlist is empty</h5>
-            <p class="text-muted mb-3">Tap the heart icon on any product to save it here.</p>
+        <x-empty-state
+            icon="fas fa-heart-crack"
+            title="Your wishlist is empty"
+            description="Tap the heart icon on any product to save it here.">
             <a href="{{ route('home') }}" class="btn btn-primary">Browse Products</a>
-        </div>
+        </x-empty-state>
     </div>
     @else
     <div class="row g-4">
@@ -95,3 +96,4 @@
     @endif
 </div>
 @endsection
+

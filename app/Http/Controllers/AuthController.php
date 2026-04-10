@@ -72,7 +72,7 @@ class AuthController extends Controller
     {
         Auth::logout();
 
-        // Destroy session completely — prevents browser back button issue
+        // Destroy session completely - prevents browser back button issue
         $request->session()->invalidate();
 
         // Generate new CSRF token for security
@@ -82,7 +82,7 @@ class AuthController extends Controller
     }
 
     // =============================================
-    // FORGOT PASSWORD — Step 1: Show Email Form
+    // FORGOT PASSWORD - Step 1: Show Email Form
     // =============================================
     public function showForgotForm()
     {
@@ -90,7 +90,7 @@ class AuthController extends Controller
     }
 
     // =============================================
-    // FORGOT PASSWORD — Step 2: Verify Email Exists
+    // FORGOT PASSWORD - Step 2: Verify Email Exists
     // =============================================
     public function verifyEmail(Request $request)
     {
@@ -117,7 +117,7 @@ class AuthController extends Controller
     }
 
     // =============================================
-    // FORGOT PASSWORD — Step 3: Show Reset Form
+    // FORGOT PASSWORD - Step 3: Show Reset Form
     // =============================================
     public function showResetForm(Request $request)
     {
@@ -133,7 +133,7 @@ class AuthController extends Controller
     }
 
     // =============================================
-    // FORGOT PASSWORD — Step 4: Update Password
+    // FORGOT PASSWORD - Step 4: Update Password
     // =============================================
     public function resetPassword(Request $request)
     {
@@ -170,3 +170,4 @@ class AuthController extends Controller
             ->with('success', 'Password reset successful! You can now login with your new password.');
     }
 }
+

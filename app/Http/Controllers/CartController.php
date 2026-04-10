@@ -49,7 +49,7 @@ class CartController extends Controller
         $requestedQty = (int) $request->input('quantity', 1);
 
         if ($cartItem) {
-            // Product already in cart — update quantity
+            // Product already in cart - update quantity
             $newQty = $cartItem->quantity + $requestedQty;
 
             // Check stock availability
@@ -121,3 +121,4 @@ class CartController extends Controller
             ->with('success', $productName . ' removed from cart.');
     }
 }
+

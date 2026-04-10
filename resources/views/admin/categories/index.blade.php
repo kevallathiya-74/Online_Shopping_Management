@@ -3,17 +3,17 @@
 @section('title', 'Manage Categories')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-            <h2><i class="fas fa-tags me-2"></i>Categories Management</h2>
-            <p>Create and organize product groups for better catalog navigation.</p>
-        </div>
+<x-page-header
+    title="Categories Management"
+    subtitle="Create and organize product groups for better catalog navigation."
+    icon="fas fa-tags"
+    badge="{{ $categories->count() }} Categories">
+    <x-slot name="actions">
         <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
             <i class="fas fa-plus-circle me-1"></i>Add Category
         </a>
-    </div>
-</div>
+    </x-slot>
+</x-page-header>
 
 <div class="section-card admin-table">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -59,13 +59,15 @@
                             </span>
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
-                            <form action="{{ route('admin.categories.delete', $category->id) }}" method="POST" class="d-inline"
-                                onsubmit="return confirm('Are you sure you want to delete this category?{{ $category->products_count > 0 ? ' It has ' . $category->products_count . ' product(s).' : '' }}')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                            </form>
+                            <div class="table-actions justify-center">
+                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <form action="{{ route('admin.categories.delete', $category->id) }}" method="POST" class="d-inline"
+                                    onsubmit="return confirm('Are you sure you want to delete this category?{{ $category->products_count > 0 ? ' It has ' . $category->products_count . ' product(s).' : '' }}')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach

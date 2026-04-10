@@ -4,15 +4,16 @@
 
 @section('content')
 <div class="container">
-    <div class="section-header mb-4">
-        <div>
-            <h2 class="section-title mb-1"><i class="fas fa-credit-card text-primary me-2"></i>Checkout</h2>
-            <p class="section-subtitle">Step 1: Shipping details. Step 2: Payment and confirmation.</p>
-        </div>
-        <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to Cart
-        </a>
-    </div>
+    <x-page-header
+        title="Checkout"
+        subtitle="Review shipping details, choose a payment method, and place your order securely."
+        icon="fas fa-credit-card">
+        <x-slot name="actions">
+            <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Cart
+            </a>
+        </x-slot>
+    </x-page-header>
 
     <div class="section-card mb-4">
         <div class="card-body py-3 d-flex flex-wrap gap-3 align-items-center">
@@ -20,7 +21,7 @@
             <i class="fas fa-arrow-right text-muted small"></i>
             <span class="auth-step active">2</span><span class="small fw-semibold text-muted">Payment</span>
             <i class="fas fa-arrow-right text-muted small"></i>
-            <span class="auth-step">3</span><span class="small fw-semibold text-muted">Place Order</span>
+            <span class="auth-step pending">3</span><span class="small fw-semibold text-muted">Place Order</span>
         </div>
     </div>
 
@@ -40,6 +41,7 @@
                                 name="shipping_address"
                                 rows="3"
                                 placeholder="Enter your complete delivery address"
+                                autocomplete="street-address"
                                 required>{{ old('shipping_address', $user->address) }}</textarea>
                             @error('shipping_address')
                             <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
@@ -54,6 +56,7 @@
                                 name="phone"
                                 value="{{ old('phone', $user->phone) }}"
                                 placeholder="e.g., 9876543210"
+                                autocomplete="tel"
                                 pattern="^\d{10}$"
                                 title="Phone number must be exactly 10 digits"
                                 required>
@@ -115,12 +118,13 @@
                     </div>
                     <div class="card-body p-4">
                         @foreach($cartItems as $item)
+                        @php($product = $item->product)
                         <div class="d-flex justify-content-between align-items-start mb-3 {{ !$loop->last ? 'pb-3 border-bottom' : '' }}">
                             <div class="d-flex align-items-center flex-fill-min">
-                                <div class="admin-table thumb-box thumb-square-45 me-2">
-                                    @if($item->product->image)
-                                    <img src="{{ $item->product->image }}"
-                                        alt="{{ $item->product->name }}"
+                                <div class="thumb-box thumb-square-45 me-2">
+                                    @if($product?->image)
+                                    <img src="{{ $product->image }}"
+                                        alt="{{ $product->name }}"
                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                     <i class="fas fa-box text-muted d-none"></i>
                                     @else
@@ -128,34 +132,36 @@
                                     @endif
                                 </div>
                                 <div>
-                                    <small class="fw-bold d-block text-wrap-anywhere">{{ Str::limit($item->product->name, 25) }}</small>
-                                    <small class="text-muted">Qty: {{ $item->quantity }} × ₹{{ number_format($item->product->price, 0) }}</small>
+                                    <small class="fw-bold d-block text-wrap-anywhere">{{ Str::limit($product?->name ?? 'Product unavailable', 25) }}</small>
+                                    <small class="text-muted">Qty: {{ $item->quantity }} × ₹{{ number_format($product?->price ?? 0, 0) }}</small>
                                 </div>
                             </div>
                             <div class="text-end">
-                                <strong>₹{{ number_format($item->product->price * $item->quantity, 2) }}</strong>
+                                <strong>₹{{ number_format(($product?->price ?? 0) * $item->quantity, 2) }}</strong>
                             </div>
                         </div>
                         @endforeach
 
                         <hr>
 
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Items:</span>
-                            <strong>{{ $cartItems->count() }} product(s)</strong>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Subtotal:</span>
-                            <strong>₹{{ number_format($total, 2) }}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Shipping:</span>
-                            <strong class="text-success">FREE</strong>
+                        <div class="summary-list">
+                            <div class="summary-row">
+                                <span class="text-muted">Items:</span>
+                                <strong>{{ $cartItems->count() }} product(s)</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span class="text-muted">Subtotal:</span>
+                                <strong>₹{{ number_format($total, 2) }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span class="text-muted">Shipping:</span>
+                                <strong class="text-success">FREE</strong>
+                            </div>
                         </div>
 
                         <hr>
 
-                        <div class="d-flex justify-content-between mb-4">
+                        <div class="summary-row mb-4">
                             <h5 class="fw-bold mb-0">Total Amount:</h5>
                             <h4 class="text-success fw-bold mb-0">₹{{ number_format($total, 2) }}</h4>
                         </div>

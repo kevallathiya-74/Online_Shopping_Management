@@ -272,7 +272,7 @@ class OrderController extends Controller
     // =============================================
     public function cancelOrder($id)
     {
-        // Step 1: Find order — must belong to current user
+        // Step 1: Find order - must belong to current user
         $order = Order::where('id', $id)
             ->where('user_id', Auth::id())
             ->with('orderItems.product')
@@ -338,3 +338,4 @@ class OrderController extends Controller
         });
     }
 }
+

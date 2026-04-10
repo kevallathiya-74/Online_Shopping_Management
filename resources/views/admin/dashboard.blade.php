@@ -3,17 +3,11 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-            <h2><i class="fas fa-gauge-high me-2"></i>Dashboard Overview</h2>
-            <p>Monitor core store metrics, activity, and operational health in one place.</p>
-        </div>
-        <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle px-3 py-2">
-            <i class="fas fa-circle me-1 icon-dot-xs"></i>System Active
-        </span>
-    </div>
-</div>
+<x-page-header
+    title="Dashboard Overview"
+    subtitle="Monitor core store metrics, recent activity, and fulfillment health from one clean admin view."
+    icon="fas fa-gauge-high"
+    badge="System Active" />
 
 <div class="row g-3 mb-4">
     <div class="col-xl-3 col-md-6">
@@ -143,7 +137,7 @@
                             <br><small class="text-muted">{{ $order->user->email }}</small>
                         </td>
                         <td class="fw-bold text-success">₹{{ number_format($order->total_amount, 2) }}</td>
-                        <td><span class="badge badge-status-{{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
+                        <td><x-order-status-badge :status="$order->status" /></td>
                         <td><small class="text-muted">{{ $order->created_at->format('d M Y') }}</small></td>
                         <td class="text-center">
                             <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">View</a>
@@ -157,3 +151,4 @@
     </div>
 </div>
 @endsection
+

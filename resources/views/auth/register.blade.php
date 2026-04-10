@@ -46,7 +46,7 @@
                                         <div class="col-md-6">
                                             <label for="name" class="form-label">Full Name</label>
                                             <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                                id="name" name="name" value="{{ old('name') }}" placeholder="Arjun Mehta" required autofocus>
+                                                id="name" name="name" value="{{ old('name') }}" placeholder="Arjun Mehta" autocomplete="name" required autofocus>
                                             @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -55,7 +55,7 @@
                                         <div class="col-md-6">
                                             <label for="email" class="form-label">Email Address</label>
                                             <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                                id="email" name="email" value="{{ old('email') }}" placeholder="you@example.com" required>
+                                                id="email" name="email" value="{{ old('email') }}" placeholder="you@example.com" autocomplete="email" required>
                                             @error('email')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -64,7 +64,7 @@
                                         <div class="col-md-6">
                                             <label for="phone" class="form-label">Phone Number <span class="text-muted fw-normal">(Optional)</span></label>
                                             <input type="text" class="form-control @error('phone') is-invalid @enderror"
-                                                id="phone" name="phone" value="{{ old('phone') }}" placeholder="9876543210">
+                                                id="phone" name="phone" value="{{ old('phone') }}" placeholder="9876543210" autocomplete="tel">
                                             @error('phone')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -73,7 +73,7 @@
                                         <div class="col-md-6">
                                             <label for="address" class="form-label">Address <span class="text-muted fw-normal">(Optional)</span></label>
                                             <textarea class="form-control @error('address') is-invalid @enderror"
-                                                id="address" name="address" rows="1" placeholder="Street, city, state">{{ old('address') }}</textarea>
+                                                id="address" name="address" rows="2" placeholder="Street, city, state" autocomplete="street-address">{{ old('address') }}</textarea>
                                             @error('address')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -82,7 +82,7 @@
                                         <div class="col-md-6">
                                             <label for="password" class="form-label">Password</label>
                                             <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                                id="password" name="password" placeholder="Minimum 8 characters" required>
+                                                id="password" name="password" placeholder="Minimum 8 characters" autocomplete="new-password" required>
                                             @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -91,7 +91,7 @@
                                         <div class="col-md-6">
                                             <label for="password_confirmation" class="form-label">Confirm Password</label>
                                             <input type="password" class="form-control"
-                                                id="password_confirmation" name="password_confirmation" placeholder="Re-enter password" required>
+                                                id="password_confirmation" name="password_confirmation" placeholder="Re-enter password" autocomplete="new-password" required>
                                         </div>
                                     </div>
 

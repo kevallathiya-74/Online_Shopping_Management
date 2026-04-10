@@ -4,15 +4,16 @@
 
 @section('content')
 <div class="container">
-    <div class="section-header mb-4">
-        <div>
-            <h2 class="section-title mb-1"><i class="fas fa-user-circle text-primary me-2"></i>My Profile</h2>
-            <p class="section-subtitle">Manage your account details and password securely.</p>
-        </div>
-        <a href="{{ route('user.dashboard') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
-        </a>
-    </div>
+    <x-page-header
+        title="My Profile"
+        subtitle="Manage your account details, delivery contact information, and password securely."
+        icon="fas fa-user-circle">
+        <x-slot name="actions">
+            <a href="{{ route('user.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </x-slot>
+    </x-page-header>
 
     <div class="row g-4">
         <div class="col-lg-7">
@@ -42,7 +43,7 @@
                             <div class="col-md-6">
                                 <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                    id="name" name="name" value="{{ old('name', $user->name) }}" required>
+                                    id="name" name="name" value="{{ old('name', $user->name) }}" autocomplete="name" required>
                                 @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -51,7 +52,7 @@
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                    id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                                    id="email" name="email" value="{{ old('email', $user->email) }}" autocomplete="email" required>
                                 @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -60,7 +61,7 @@
                             <div class="col-md-6">
                                 <label for="phone" class="form-label">Phone Number</label>
                                 <input type="text" class="form-control @error('phone') is-invalid @enderror"
-                                    id="phone" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="9876543210">
+                                    id="phone" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="9876543210" autocomplete="tel">
                                 @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -69,7 +70,7 @@
                             <div class="col-md-6">
                                 <label for="address" class="form-label">Address</label>
                                 <textarea class="form-control @error('address') is-invalid @enderror"
-                                    id="address" name="address" rows="1" placeholder="Street, city, state">{{ old('address', $user->address) }}</textarea>
+                                    id="address" name="address" rows="2" placeholder="Street, city, state" autocomplete="street-address">{{ old('address', $user->address) }}</textarea>
                                 @error('address')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -90,7 +91,7 @@
                     <h5 class="mb-0 fw-bold"><i class="fas fa-circle-info text-info me-2"></i>Account Information</h5>
                 </div>
                 <div class="card-body p-4">
-                    <table class="table table-borderless mb-0">
+                    <table class="table table-borderless meta-table">
                         <tr>
                             <td class="text-muted fw-semibold meta-label-col">Name</td>
                             <td>{{ $user->name }}</td>

@@ -3,17 +3,16 @@
 @section('title', 'Create Product')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <div>
-            <h2><i class="fas fa-plus-circle me-2"></i>Create Product</h2>
-            <p>Add a new product to your store catalog with complete listing details.</p>
-        </div>
+<x-page-header
+    title="Create Product"
+    subtitle="Add a new product to your catalog with complete listing details and a clean preview."
+    icon="fas fa-plus-circle">
+    <x-slot name="actions">
         <a href="{{ route('admin.products') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i>Back to Products
         </a>
-    </div>
-</div>
+    </x-slot>
+</x-page-header>
 
 <div class="section-card">
     <div class="card-header">

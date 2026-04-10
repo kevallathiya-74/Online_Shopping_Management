@@ -25,7 +25,7 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="table-responsive">
-                            <table class="table table-borderless mb-0">
+                            <table class="table table-borderless meta-table">
                                 <tr>
                                     <td class="text-muted fw-semibold meta-label-col">Order ID</td>
                                     <td><span class="badge bg-dark-subtle text-dark border">#{{ $order->id }}</span></td>
@@ -36,22 +36,18 @@
                                 </tr>
                                 <tr>
                                     <td class="text-muted fw-semibold">Status</td>
-                                    <td><span class="badge badge-status-{{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
+                                    <td><x-order-status-badge :status="$order->status" /></td>
                                 </tr>
                             </table>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="table-responsive">
-                            <table class="table table-borderless mb-0">
+                            <table class="table table-borderless meta-table">
                                 <tr>
                                     <td class="text-muted fw-semibold meta-label-col">Payment</td>
                                     <td>
-                                        @if($order->payment_method == 'online')
-                                        <span class="badge bg-primary"><i class="fas fa-credit-card me-1"></i>Online Payment</span>
-                                        @else
-                                        <span class="badge bg-secondary"><i class="fas fa-money-bill-wave me-1"></i>Cash on Delivery</span>
-                                        @endif
+                                        <x-payment-method-badge :method="$order->payment_method" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -88,7 +84,7 @@
                             @foreach($order->orderItems as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td><strong class="text-wrap-anywhere d-inline-block">{{ $item->product->name ?? 'Product Deleted' }}</strong></td>
+                                <td><strong class="text-wrap-anywhere d-inline-block">{{ $item->product?->name ?? 'Product Deleted' }}</strong></td>
                                 <td>₹{{ number_format($item->price, 2) }}</td>
                                 <td class="text-center"><span class="badge bg-info">{{ $item->quantity }}</span></td>
                                 <td class="text-end fw-bold">₹{{ number_format($item->price * $item->quantity, 2) }}</td>
@@ -120,3 +116,4 @@
     </div>
 </div>
 @endsection
+

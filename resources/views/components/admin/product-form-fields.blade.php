@@ -12,6 +12,7 @@
             value="{{ old('name', $editing ? $product->name : '') }}"
             placeholder="Enter product name"
             required>
+        <small class="text-muted d-block mt-1">Use a clear catalog name customers will recognize quickly.</small>
         @error('name')
             <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
         @enderror
@@ -30,6 +31,7 @@
                 </option>
             @endforeach
         </select>
+        <small class="text-muted d-block mt-1">Choose the best-fit category so storefront filters stay accurate.</small>
         @error('category_id')
             <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
         @enderror
@@ -41,8 +43,9 @@
     <textarea class="form-control @error('description') is-invalid @enderror"
         id="description"
         name="description"
-        rows="3"
+        rows="4"
         placeholder="Enter product description (optional)">{{ old('description', $editing ? $product->description : '') }}</textarea>
+    <small class="text-muted d-block mt-1">Keep the description practical and customer-focused.</small>
     @error('description')
         <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
     @enderror
@@ -50,7 +53,7 @@
 
 <div class="row">
     <div class="col-md-6 mb-3">
-        <label for="price" class="form-label">Price (Rs) <span class="text-danger">*</span></label>
+        <label for="price" class="form-label">Price (â‚¹) <span class="text-danger">*</span></label>
         <input type="number"
             step="0.01"
             min="0.01"
@@ -60,6 +63,7 @@
             value="{{ old('price', $editing ? $product->price : '') }}"
             placeholder="0.00"
             required>
+        <small class="text-muted d-block mt-1">Enter the selling price only. Use digits and decimals as needed.</small>
         @error('price')
             <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
         @enderror
@@ -75,6 +79,7 @@
             value="{{ old('stock', $editing ? $product->stock : 0) }}"
             placeholder="0"
             required>
+        <small class="text-muted d-block mt-1">Set the currently available units for accurate checkout behavior.</small>
         @error('stock')
             <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
         @enderror

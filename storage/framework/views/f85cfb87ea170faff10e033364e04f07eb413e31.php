@@ -1,7 +1,7 @@
 <?php $__env->startSection('title', isset($category) ? $category->name . ' - ShopEasy' : 'Home - ShopEasy'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="container">
+<div class="container home-catalog">
     <div class="section-card hero-banner mb-4">
         <div class="card-body p-4 p-lg-5">
             <span class="hero-highlight mb-3"><i class="fas fa-bolt"></i> New arrivals every week</span>
@@ -29,26 +29,46 @@
         </div>
     </div>
 
-    <div class="section-card mb-4">
+    <div class="section-card category-strip mb-4">
         <div class="card-body">
-            <div class="section-header">
+            <div class="section-header category-strip-header">
                 <div>
                     <h3 class="section-title"><i class="fas fa-layer-group me-2 text-primary"></i>Shop by Category</h3>
                     <p class="section-subtitle">Pick a category to quickly narrow your results.</p>
                 </div>
+                <div class="category-strip-meta">
+                    <span class="badge badge-soft category-count"><?php echo e($categories->count() + 1); ?> categories</span>
+                </div>
             </div>
 
-            <div>
-                <a href="<?php echo e(route('home', request()->except(['category_id', 'page']))); ?>" class="category-pill <?php echo e(!request('category_id') ? 'active' : ''); ?>">
-                    <i class="fas fa-grid-2"></i>All Products
-                </a>
-                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <a href="<?php echo e(route('home', array_merge(request()->except(['category_id', 'page']), ['category_id' => $cat->id]))); ?>"
-                    class="category-pill <?php echo e((string) request('category_id') === (string) $cat->id ? 'active' : ''); ?>">
-                    <i class="fas fa-tag"></i><?php echo e($cat->name); ?>
+            <?php
+            $categoryIconMap = [
+            'electronics' => 'fa-bolt',
+            'clothing' => 'fa-shirt',
+            'books' => 'fa-book',
+            'home & kitchen' => 'fa-house',
+            'sports' => 'fa-dumbbell',
+            ];
+            ?>
 
-                </a>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <div class="category-pills-wrap" aria-label="Product categories">
+                <div class="category-pills">
+                    <a href="<?php echo e(route('home', request()->except(['category_id', 'page']))); ?>" class="category-pill <?php echo e(!request('category_id') ? 'active' : ''); ?>" <?php if(!request('category_id')): ?> aria-current="page" <?php endif; ?>>
+                        <span class="pill-icon" aria-hidden="true"><i class="fas fa-boxes-stacked"></i></span>
+                        <span class="category-pill-label">All Products</span>
+                    </a>
+                    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
+                    $categoryKey = strtolower(trim($cat->name));
+                    $categoryIcon = $categoryIconMap[$categoryKey] ?? 'fa-tag';
+                    ?>
+                    <a href="<?php echo e(route('home', array_merge(request()->except(['category_id', 'page']), ['category_id' => $cat->id]))); ?>"
+                        class="category-pill <?php echo e((string) request('category_id') === (string) $cat->id ? 'active' : ''); ?>" <?php if((string) request('category_id') === (string) $cat->id): ?> aria-current="page" <?php endif; ?>>
+                        <span class="pill-icon" aria-hidden="true"><i class="fas <?php echo e($categoryIcon); ?>"></i></span>
+                        <span class="category-pill-label"><?php echo e($cat->name); ?></span>
+                    </a>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
             </div>
         </div>
     </div>
@@ -106,30 +126,39 @@
         </div>
 
         <div class="col-lg-9">
-            <div class="section-header mb-3">
+            <div class="section-header products-header mb-3">
                 <div>
                     <h3 class="section-title mb-1"><?php echo e(isset($category) ? $category->name : 'All Products'); ?></h3>
                     <p class="section-subtitle">Curated listing with clean product details and fast actions.</p>
                 </div>
-                <span class="badge-soft"><?php echo e($products->total()); ?> products</span>
             </div>
 
             <?php if($products->isEmpty()): ?>
             <div class="section-card">
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-box-open"></i></div>
-                    <h5 class="fw-bold">No products found</h5>
-                    <p class="text-muted mb-3">
-                        <?php if(isset($category)): ?>
-                        Nothing is available in "<?php echo e($category->name); ?>" right now.
-                        <?php elseif(request('search') || request('min_price') || request('max_price')): ?>
-                        No results match your search or filter combination.
-                        <?php else: ?>
-                        Products will appear here as soon as inventory is added.
-                        <?php endif; ?>
-                    </p>
+                <?php if (isset($component)) { $__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4 = $component; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['icon' => 'fas fa-box-open','title' => 'No products found','description' => isset($category)
+                    ? 'Nothing is available in ' . $category->name . ' right now.'
+                    : ((request('search') || request('min_price') || request('max_price'))
+                        ? 'No results match your search or filter combination.'
+                        : 'Products will appear here as soon as inventory is added.')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component->withName('empty-state'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
+<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['icon' => 'fas fa-box-open','title' => 'No products found','description' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(isset($category)
+                    ? 'Nothing is available in ' . $category->name . ' right now.'
+                    : ((request('search') || request('min_price') || request('max_price'))
+                        ? 'No results match your search or filter combination.'
+                        : 'Products will appear here as soon as inventory is added.'))]); ?>
                     <a href="<?php echo e(route('home')); ?>" class="btn btn-outline-primary">View all products</a>
-                </div>
+                 <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4)): ?>
+<?php $component = $__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4; ?>
+<?php unset($__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4); ?>
+<?php endif; ?>
             </div>
             <?php else: ?>
             <div class="row g-4">
@@ -228,7 +257,7 @@
     ?>
 
     <?php if($featuredProducts->isNotEmpty()): ?>
-    <div class="section-card mt-4">
+    <div class="section-card mt-4 featured-week-section">
         <div class="card-body">
             <div class="section-header">
                 <div>
@@ -237,23 +266,21 @@
                 </div>
             </div>
 
-            <div class="row g-3">
+            <div class="row g-3 featured-product-grid">
                 <?php $__currentLoopData = $featuredProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $featured): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-md-4">
-                    <a href="<?php echo e(route('products.show', $featured->id)); ?>" class="section-card d-block p-3 h-100 text-dark">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="admin-table thumb-box thumb-square-64">
-                                <?php if($featured->image): ?>
-                                <img src="<?php echo e($featured->image); ?>" alt="<?php echo e($featured->name); ?>">
-                                <?php else: ?>
-                                <i class="fas fa-image text-muted"></i>
-                                <?php endif; ?>
-                            </div>
-                            <div>
-                                <div class="fw-bold"><?php echo e(Str::limit($featured->name, 30)); ?></div>
-                                <div class="small text-muted"><?php echo e($featured->category->name); ?></div>
-                                <div class="fw-bold mt-1">₹<?php echo e(number_format($featured->price, 0)); ?></div>
-                            </div>
+                    <a href="<?php echo e(route('products.show', $featured->id)); ?>" class="featured-product-card">
+                        <div class="thumb-box thumb-square-64 featured-product-thumb">
+                            <?php if($featured->image): ?>
+                            <img src="<?php echo e($featured->image); ?>" alt="<?php echo e($featured->name); ?>">
+                            <?php else: ?>
+                            <i class="fas fa-image text-muted"></i>
+                            <?php endif; ?>
+                        </div>
+                        <div class="featured-product-meta">
+                            <div class="featured-product-title"><?php echo e(Str::limit($featured->name, 30)); ?></div>
+                            <div class="featured-product-category"><?php echo e($featured->category->name); ?></div>
+                            <div class="featured-product-price">₹<?php echo e(number_format($featured->price, 0)); ?></div>
                         </div>
                     </a>
                 </div>
@@ -264,4 +291,5 @@
     <?php endif; ?>
 </div>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\Online_Shopping_Management\resources\views/home.blade.php ENDPATH**/ ?>

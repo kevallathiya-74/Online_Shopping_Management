@@ -3,17 +3,16 @@
 @section('title', 'Create Category')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <div>
-            <h2><i class="fas fa-plus-circle me-2"></i>Create Category</h2>
-            <p>Add a new product category to your store</p>
-        </div>
+<x-page-header
+    title="Create Category"
+    subtitle="Add a new product category to keep the storefront organized."
+    icon="fas fa-plus-circle">
+    <x-slot name="actions">
         <a href="{{ route('admin.categories') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i>Back to Categories
         </a>
-    </div>
-</div>
+    </x-slot>
+</x-page-header>
 
 <div class="section-card">
     <div class="card-header">

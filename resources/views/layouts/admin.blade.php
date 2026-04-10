@@ -15,12 +15,15 @@
 <body class="admin-shell">
     <nav class="admin-navbar">
         <div class="d-flex align-items-center gap-3">
-            <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <button class="sidebar-toggle" type="button" onclick="toggleSidebar()" aria-controls="adminSidebar" aria-expanded="false" aria-label="Toggle sidebar">
                 <i class="fas fa-bars"></i>
             </button>
             <a href="{{ route('admin.dashboard') }}" class="brand">
                 <span class="brand-mark"><i class="fas fa-shield-halved"></i></span>
-                Admin Console
+                <span class="brand-copy">
+                    <span>Admin Console</span>
+                    <small>Operations center</small>
+                </span>
             </a>
         </div>
 
@@ -42,89 +45,30 @@
         </div>
     </nav>
 
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-    <aside class="admin-sidebar" id="adminSidebar">
-        <div class="sidebar-heading">Overview</div>
-        <ul class="nav-menu">
-            <li>
-                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
-        </ul>
-
-        <div class="sidebar-heading mt-3">Catalog</div>
-        <ul class="nav-menu">
-            <li>
-                <a href="{{ route('admin.categories') }}" class="{{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
-                    <i class="fas fa-tags"></i> Categories
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.products') }}" class="{{ request()->routeIs('admin.products*') ? 'active' : '' }}">
-                    <i class="fas fa-box-open"></i> Products
-                </a>
-            </li>
-        </ul>
-
-        <div class="sidebar-heading mt-3">Operations</div>
-        <ul class="nav-menu">
-            <li>
-                <a href="{{ route('admin.orders') }}" class="{{ request()->routeIs('admin.orders*') ? 'active' : '' }}">
-                    <i class="fas fa-bag-shopping"></i> Orders
-                </a>
-            </li>
-        </ul>
-
-        <div class="sidebar-heading mt-3">System</div>
-        <ul class="nav-menu">
-            <li>
-                <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users*') ? 'active' : '' }}">
-                    <i class="fas fa-users-cog"></i> Users
-                </a>
-            </li>
-        </ul>
-    </aside>
+    <x-sidebar />
 
     <main class="admin-content">
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert" data-auto-dismiss="true">
-                <i class="fas fa-check-circle me-2"></i>
-                <strong>Success!</strong> {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" data-auto-dismiss="true">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong>Error!</strong> {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <strong>Please fix the following errors:</strong>
-                <ul class="mb-0 mt-2">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
+        <div class="component-alerts">
+            <x-flash-messages />
+        </div>
 
         @yield('content')
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const adminSidebar = document.getElementById('adminSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarToggleButton = document.querySelector('.sidebar-toggle');
+
         function toggleSidebar() {
-            document.getElementById('adminSidebar').classList.toggle('show');
-            document.getElementById('sidebarOverlay').classList.toggle('show');
+            const isOpen = adminSidebar.classList.toggle('show');
+            sidebarOverlay.classList.toggle('show', isOpen);
+            document.body.classList.toggle('sidebar-open', isOpen);
+
+            if (sidebarToggleButton) {
+                sidebarToggleButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            }
         }
 
         setTimeout(function() {
@@ -136,8 +80,12 @@
 
         window.addEventListener('resize', function() {
             if (window.innerWidth > 991) {
-                document.getElementById('adminSidebar').classList.remove('show');
-                document.getElementById('sidebarOverlay').classList.remove('show');
+                adminSidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+                document.body.classList.remove('sidebar-open');
+                if (sidebarToggleButton) {
+                    sidebarToggleButton.setAttribute('aria-expanded', 'false');
+                }
             }
         });
     </script>

@@ -180,7 +180,7 @@ Password: admin123
 
 **👤 Test User Account**
 ```
-Email: user@test.com
+Email: keval@gmail.com
 Password: password
 ```
 

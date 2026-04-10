@@ -11,6 +11,7 @@
         value="{{ old('name', $editing ? $category->name : '') }}"
         placeholder="Enter category name"
         required>
+    <small class="text-muted d-block mt-1">Use short, clear names that make storefront browsing easier.</small>
     @error('name')
         <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
     @enderror
@@ -21,8 +22,9 @@
     <textarea class="form-control @error('description') is-invalid @enderror"
         id="description"
         name="description"
-        rows="3"
+        rows="4"
         placeholder="Enter category description (optional)">{{ old('description', $editing ? $category->description : '') }}</textarea>
+    <small class="text-muted d-block mt-1">Optional notes can help admins understand what belongs in this category.</small>
     @error('description')
         <div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
     @enderror

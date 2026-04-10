@@ -52,7 +52,7 @@
                   <div class="mb-3">
                     <label for="password" class="form-label">New Password</label>
                     <input type="password" class="form-control @error('password') is-invalid @enderror"
-                      id="password" name="password" placeholder="Minimum 8 characters" required autofocus>
+                      id="password" name="password" placeholder="Minimum 8 characters" autocomplete="new-password" required autofocus>
                     @error('password')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -61,7 +61,7 @@
                   <div class="mb-3">
                     <label for="password_confirmation" class="form-label">Confirm New Password</label>
                     <input type="password" class="form-control"
-                      id="password_confirmation" name="password_confirmation" placeholder="Re-enter your new password" required>
+                      id="password_confirmation" name="password_confirmation" placeholder="Re-enter your new password" autocomplete="new-password" required>
                   </div>
 
                   <button type="submit" class="btn btn-success w-100 py-2">
